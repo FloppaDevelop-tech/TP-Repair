@@ -1,0 +1,233 @@
+/* Container สำหรับ card ทั้งหมด */
+.cards-container, #history-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+  padding: 0 20px;
+}
+
+/* Card รายงานแต่ละอัน */
+.report-card {
+    flex: 1 1 calc(33.33% - 10px); 
+    min-width: 220px;          
+    display: flex;
+    flex-direction: row;      
+    justify-content: space-between;
+    align-items: center;      /* ปุ่มอยู่กลางแนวตั้ง */
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Card info */
+.card-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.card-info h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.card-info p {
+    margin: 2px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+/* Card buttons */
+.card-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* ปุ่มทั้งหมดเท่ากัน */
+.card-buttons button,
+#deleteAllBtn {
+    padding: 11px;           
+    min-width: 100px;        
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: white;
+    transition: 0.2s;
+}
+
+/* สีและ hover */
+.details-btn {
+    background-color: #007a3d;
+}
+.details-btn:hover {
+    background-color: #00632e;
+}
+
+.delete-btn,
+#deleteAllBtn {
+    background-color: red;
+}
+.delete-btn:hover,
+#deleteAllBtn:hover {
+    background-color: #b02a37;
+}
+
+/* ปุ่มลบทั้งหมด */
+#deleteAllBtn {
+  margin-bottom: 15px;
+}
+
+/* popup รายละเอียด */
+#reportDetailModal {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+}
+
+#reportDetailModal .modal-content {
+    background: #fff;
+    padding: 20px 25px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+    overflow-y: auto;
+    max-height: 90%;
+}
+
+#reportDetailModal .modal-content img {
+    max-width: 100%;
+    margin-top: 10px;
+    border-radius: 6px;
+}
+
+/* Popup ลบ */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.popup-content {
+    background: #fff;
+    padding: 25px;
+    width: 300px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.popup-content button {
+    padding: 8px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+#confirmDelete { background-color: red; color: white; }
+#confirmDelete:hover { background-color: #b02a37; }
+
+#cancelDelete { background-color: #555; color: white; }
+#cancelDelete:hover { background-color: #333; }
+/* popup confirm ลบทั้งหมด */
+#deleteAllPopup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+#deleteAllPopup .popup-content {
+  background: #fff;
+  padding: 25px;
+  width: 330px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+#deleteAllPopup .popup-content h3 {
+  margin: 10px 0 10px 0;
+  font-size: 20px;
+  color: #333;
+}
+
+#deleteAllPopup .popup-content p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+#deleteAllPopup .popup-content button {
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+#confirmDeleteAll {
+  background-color: #dc3545;
+  color: white;
+}
+#confirmDeleteAll:hover {
+  background-color: #b02a37;
+}
+
+#cancelDeleteAll {
+  background-color: #6c757d;
+  color: white;
+}
+#cancelDeleteAll:hover {
+  background-color: #5a6268;
+}
+/* ปุ่มปิด popup รายงาน History */
+#reportDetailModal #closeModal {
+    padding: 11px 18px;           /* ขนาดเท่าปุ่ม Status */
+    min-width: 100px;
+    border-radius: 6px;           /* มนเหมือนปุ่มอื่น */
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: white;
+    background-color: #007a3d;    /* สีเขียวเหมือนปุ่ม Detail */
+    transition: 0.2s;
+}
+
+#reportDetailModal #closeModal:hover {
+    background-color: #00632e;    /* สีเข้มเวลา hover */
+}

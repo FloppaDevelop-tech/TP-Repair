@@ -1,0 +1,488 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    background: #fff;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.history-btn {
+  background: white;
+  color: #007a3d;
+  padding: 6px 15px;
+  border-radius: 15px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.history-btn:hover {
+  background-color: #e0e0e0;
+}
+
+/* Form Container */
+.container {
+  background: white;
+  max-width: 420px;
+  width: 90%;        
+  margin: 70px auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+
+form label {
+  display: block;
+  margin-top: 10px;
+}
+
+input, textarea, button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: #009879;
+  color: white;
+  border: none;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #007a63;
+}
+
+/* History Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.page-content {
+    margin-top: 80px;
+    padding: 0 20px;
+}
+.page-title {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+th {
+  background-color: #007a3d;
+  color: white;
+}
+/* status page */
+.status-pending {
+  background-color: #ffc107;
+  color: #333;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.status-inprogress {
+  background-color: #007bff;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.status-completed {
+  background-color: #28a745;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.icon-box {
+  display: inline-block;
+  padding: 20px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  text-align: center;
+  width: 200px;
+  cursor: pointer;}
+.icon-box img {
+  width: 100px;
+  height: auto;
+  display: block;
+  margin: 0 auto;}
+.icon-box p {
+  margin-top: 10px;}
+.icon-box:hover {
+  background: #f4f4f4;
+  border-color: #aaa;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.school-logo {
+  width: 40px;
+  height: auto;
+}
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-bottom: 40px;
+}
+/*Side Menu Section */
+/* Menu Header */
+
+.menu-header .profile-icon {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.menu-header-text {
+  flex: 1;
+}
+
+.menu-header-text h3 {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0 0 2px 0;
+  color: white;
+}
+
+.menu-header-text .detail {
+  font-size: 11px;
+  opacity: 0.8;
+  margin: 0;
+}
+
+/* Menu Section */
+.menu-section {
+  padding: 10px 0;
+}
+
+.menu-section-title {
+  padding: 15px 18px 8px;
+  font-size: 11px;
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Menu Items */
+.menu-icon {
+  width: 24px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.report-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin: 20px;
+}
+
+.report-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-info {
+  flex: 1;
+}
+
+.card-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.card-info p {
+  margin: 3px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.card-buttons {
+  margin-left: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.card-buttons button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.details-btn {
+  background-color: #007a3d;
+  color: white;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* popup รายละเอียดเต็ม */
+.detail-popup {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  justify-content:center;
+  align-items:center;
+  z-index:100;
+}
+
+.detail-popup-content {
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  overflow-y: auto;
+  max-height: 90%;
+}
+
+.detail-popup-content img {
+  max-width: 100%;
+  margin-top: 10px;
+  border-radius: 6px;
+}
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.popup-content {
+  background: #fff;
+  padding: 25px;
+  width: 330px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  animation: fadeIn 0.3s ease;
+}
+.popup-logo {
+  width: 70px;
+  margin-bottom: 10px;
+}
+.close-btn {
+  margin-top: 15px;
+  background: #0052cc;
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.close-btn:hover {
+  background: #003c99;
+}
+@keyframes fadeIn {
+  from {opacity: 0; transform: scale(0.9);}
+  to {opacity: 1; transform: scale(1);}
+}
+.success-icon {
+  width: 50px;
+  height: 50px;
+  color: #28a745;
+  margin-bottom: 15px;
+}
+
+.popup-content h3 {
+  margin: 10px 0 5px 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.popup-content p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.popup-content button {
+  padding: 8px 18px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.popup-content button:hover {
+  background-color: #218838;
+}
+/* Container สำหรับรูปภาพ gallery */
+/* Gallery container */
+.detail-popup-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+/* แต่ละรูป */
+.detail-popup-photos .photo-box {
+    width: 100%;
+    padding-top: 100%; /* ทำเป็น square */
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.detail-popup-photos .photo-box img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* Preview รูป */
+#previewContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.preview-box {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* square */
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f0f0f0;
+}
+
+.preview-box img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 2px 5px;
+    font-size: 12px;
+}
+
+/* Popup */
+#successPopup, #warningPopup {
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.popup-content {
+    background: #fff;
+    padding: 25px;
+    width: 330px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.popup-content button {
+    padding: 8px 18px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.popup-content button:hover {
+    background-color: #218838;
+}
+
+
+@keyframes popupFade {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+  .nav-desktop {
+    display: none;
+  }
+}

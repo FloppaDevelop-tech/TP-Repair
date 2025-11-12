@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สถานะการซ่อม | TP-Maintenance</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="menu.css">
+</head>
+<body>
+<header>
+  <div class="header-left">
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <img src="taweethapisek logo.png" alt="School Logo" class="school-logo">
+    <div class="title-text">
+      <p class="name">TP Maintenance</p>
+      <p class="detail">ระบบแจ้งซ่อม</p>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<div class="sideMenu" id="sideMenu">
+  <div class="menu-header"></div>
+  <a href="report.html">แจ้งซ่อม</a>
+  <a href="status.html">สถานะการซ่อม</a>
+  <a href="history.html">ประวัติการแจ้งซ่อม</a>
+</div>
+
+<div class="page-content">
+  <h1 class="page-title">รายการแจ้งซ่อมและสถานะ</h1>
+  <div id="report-cards" class="report-cards">
+    <!-- Card จะถูกสร้างด้วย JS -->
+  </div>
+</div>
+<!-- Popup ลบรายการ Status -->
+<div id="deleteModal" class="popup">
+  <div class="popup-content">
+    <div class="success-icon">⚠️</div>
+    <h3>ลบรายการแจ้งซ่อม</h3>
+    <p>คุณแน่ใจว่าต้องการลบรายการนี้หรือไม่?</p>
+    <button id="confirmDelete" class="delete-btn">ยืนยันลบ</button>
+    <button id="cancelDelete" class="close-btn">ยกเลิก</button>
+  </div>
+</div>
+
+<script src="menu.js" defer></script>
+<script src="status.js" defer></script>
+</body>
+</html>

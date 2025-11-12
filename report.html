@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>แจ้งซ่อม | TP-Maintenance</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="menu.css">
+</head>
+<body>
+<header>
+  <div class="header-left">
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <img src="taweethapisek logo.png" alt="School Logo" class="school-logo">
+    <div class="title-text">
+      <p class="name">TP Maintenance</p>
+      <p class="detail">ระบบแจ้งซ่อม</p>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<div class="sideMenu" id="sideMenu">
+  <div class="menu-header"></div>
+  <a href="report.html">แจ้งซ่อม</a>
+  <a href="status.html">สถานะการซ่อม</a>
+  <a href="history.html">ประวัติการแจ้งซ่อม</a>
+</div>
+
+<div class="container">
+  <h2>แจ้งซ่อม</h2>
+
+  <form id="maintenanceForm">
+    <label>ชื่อ-สกุลผู้แจ้ง</label>
+    <input type="text" name="name" required>
+
+    <label>กลุ่มสาระการเรียนรู้</label>
+    <input type="text" name="grade" required>
+
+    <label>วันที่</label>
+    <input type="date" name="date" required>
+
+    <label>สถานที่</label>
+    <input type="text" name="place" required>
+
+    <label>รายละเอียดของปัญหา</label>
+    <textarea name="detail" rows="4" required></textarea>
+
+    <label>ภาพประกอบ (จำเป็นต้องมีอย่างน้อย 1 ภาพ)*</label>
+    <div class="file-upload-wrapper">
+      <label class="file-upload-label" id="fileLabel">📷 เลือกรูปภาพ</label>
+      <input type="file" id="photoInput" accept="image/*" multiple>
+    </div>
+
+    <div id="previewContainer" class="preview-container card-grid"></div>
+
+    <button type="submit" id="submitBtn">ส่ง</button>
+  </form>
+</div>
+<!-- Success Popup -->
+<div id="successPopup" class="popup">
+  <div class="popup-content">
+    <img src="taweethapisek logo.png" class="popup-logo" alt="Logo">
+    <h2>Report Success!</h2>
+    <button class="close-btn" onclick="closePopup()">ปิด</button>
+  </div>
+</div>
+<div id="warningPopup" class="popup">
+  <div class="popup-content">
+    <p></p>
+    <button class="close-btn" onclick="closeWarningPopup()">ปิด</button>
+  </div>
+</div>
+
+<script src="menu.js" defer></script>
+<script src="report.js"></script>
+</body>
+</html>

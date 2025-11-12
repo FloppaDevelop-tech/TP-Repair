@@ -1,0 +1,114 @@
+/* Header */
+header {
+    display: flex;
+    align-items: center;
+    background-color: #007a3d;
+    color: white;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10001; /* ให้เหนือ sideMenu + overlay */
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 0;
+}
+.menu-header {
+  padding-top: 60px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.school-logo {
+    width: 40px;
+    height: auto;
+}
+
+.title-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.name {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.detail {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* Hamburger */
+.hamburger {
+    font-size: 26px;
+    cursor: pointer;
+    background: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Overlay */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    z-index: 9999;
+}
+
+.overlay.show {
+    display: block;
+}
+
+/* Side Menu */
+.sideMenu {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    background: #0f6a3b;
+    color: #fff;
+    transition: left 0.3s ease;
+    z-index: 10000;
+    overflow-y: auto;
+}
+
+.sideMenu.show {
+    left: 0;
+}
+
+/* Menu Items */
+.sideMenu a {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    color: #fff;
+    text-decoration: none;
+    gap: 12px;
+    transition: background 0.2s;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.sideMenu a:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Responsive Hamburger */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+}
