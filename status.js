@@ -2,24 +2,23 @@ document.addEventListener('DOMContentLoaded', () => {
     loadStatusReports();
 });
 
-// listen to storage events from other tabs (e.g., admin page updates)
+// real-time update เมื่อ tab อื่นแก้ไข
 window.addEventListener('storage', (e) => {
     if (e.key === 'reports-updated') {
-        // another tab updated reports — refresh the list
         loadStatusReports();
     }
 });
 
 let statusDeleteTargetId = null;
 
-// โหลดข้อมูล report จาก server
+// โหลด report จาก server
 async function loadStatusReports() {
     const container = document.getElementById('report-cards');
     if (!container) return;
     container.innerHTML = '';
 
     try {
-    const res = await fetch('/api/reports/status'); 
+        const res = await fetch('/api/reports/status');
         if (!res.ok) throw new Error('ไม่สามารถดึงข้อมูลได้');
         let reports = await res.json();
 
@@ -28,7 +27,6 @@ async function loadStatusReports() {
             return;
         }
 
-        // แสดงรายการล่าสุดก่อน
         reports.reverse().forEach(report => {
             const card = document.createElement('div');
             card.className = 'report-card';
@@ -36,11 +34,11 @@ async function loadStatusReports() {
             const info = document.createElement('div');
             info.className = 'card-info';
             info.innerHTML = `
-                <h3>${report.name} (${report.grade})</h3>
-                <p><strong>รหัส:</strong> ${report.id}</p>
-                <p>วันที่: ${report.date}</p>
-                <p>สถานที่: ${report.place}</p>
-                <p>สถานะ: <span class="${statusClass(report.status)}">${report.status}</span></p>
+                <h3>${escapeHtml(report.name)} (${escapeHtml(report.grade)})</h3>
+                <p><strong>รหัส:</strong> ${escapeHtml(report.id)}</p>
+                <p>วันที่: ${escapeHtml(report.date)}</p>
+                <p>สถานที่: ${escapeHtml(report.place)}</p>
+                <p>สถานะ: <span class="${statusClass(report.status)}">${escapeHtml(report.status)}</span></p>
             `;
 
             const btns = document.createElement('div');
@@ -71,7 +69,7 @@ async function loadStatusReports() {
     }
 }
 
-// แปลงชื่อ status เป็น class
+// แปลง status เป็น class
 function statusClass(status) {
     if (status === 'รอดำเนินการ') return 'status-pending';
     if (status === 'กำลังดำเนินการ') return 'status-inprogress';
@@ -79,7 +77,7 @@ function statusClass(status) {
     return '';
 }
 
-// ปลอดภัย: escape HTML text to avoid injection when using innerHTML
+// ปลอดภัย: escape HTML
 function escapeHtml(input) {
     if (input === undefined || input === null) return '';
     return String(input)
@@ -92,7 +90,6 @@ function escapeHtml(input) {
 
 // --- Popup รายละเอียด ---
 function showStatusDetail(report) {
-    // always ensure modal element exists
     let modal = document.getElementById('statusDetailModal');
     if (!modal) {
         modal = document.createElement('div');
@@ -101,10 +98,8 @@ function showStatusDetail(report) {
         document.body.appendChild(modal);
     }
 
-    // safe fallbacks for fields
     const safe = v => (v === undefined || v === null || v === '') ? '-' : v;
 
-    // update content every time so stale values (or typos) don't persist
     modal.innerHTML = `
         <div class="detail-popup-content">
             <h2>${escapeHtml(safe(report.name))} (${escapeHtml(safe(report.grade))})</h2>
@@ -130,7 +125,6 @@ function showStatusDetail(report) {
         });
     }
 
-    // wire close button after content update
     const closeBtn = document.getElementById('closeStatusModal');
     if (closeBtn) closeBtn.onclick = () => modal.classList.remove('active');
 
@@ -169,65 +163,52 @@ document.getElementById('cancelDelete').onclick = () => {
     deleteModal.classList.remove('active');
 };
 
-// Share report function
+// --- Share report ---
 async function shareStatusReport(reportId) {
     try {
         const response = await fetch(`/api/reports/share/${reportId}`, {
             method: 'POST',
             headers: {'Content-Type':'application/json'}
         });
-
-        if (!response.ok) {
-            throw new Error('Failed to create share link');
-        }
-
+        if (!response.ok) throw new Error('Failed to create share link');
         const data = await response.json();
         const shareUrl = data.shareUrl;
-        
-        // Show share popup
+
         const shareModal = document.getElementById('shareModal');
         const shareUrlInput = document.getElementById('shareUrlInput');
         const copyShareBtn = document.getElementById('copyShareBtn');
         const closeShareBtn = document.getElementById('closeShareBtn');
-        
+
         if (shareModal && shareUrlInput) {
             shareUrlInput.value = shareUrl;
             shareModal.style.display = 'flex';
             shareModal.classList.add('active');
-            
-            // Copy to clipboard
+
             navigator.clipboard.writeText(shareUrl).catch(() => {
                 console.warn('Failed to copy to clipboard');
             });
-            
-            // Copy button handler
+
             if (copyShareBtn) {
                 copyShareBtn.onclick = () => {
                     navigator.clipboard.writeText(shareUrl).then(() => {
                         copyShareBtn.textContent = 'คัดลอกแล้ว!';
-                        setTimeout(() => {
-                            copyShareBtn.textContent = 'คัดลอกอีกครั้ง';
-                        }, 2000);
+                        setTimeout(() => copyShareBtn.textContent = 'คัดลอกอีกครั้ง', 2000);
                     }).catch(() => {
                         shareUrlInput.select();
                         document.execCommand('copy');
                         copyShareBtn.textContent = 'คัดลอกแล้ว!';
-                        setTimeout(() => {
-                            copyShareBtn.textContent = 'คัดลอกอีกครั้ง';
-                        }, 2000);
+                        setTimeout(() => copyShareBtn.textContent = 'คัดลอกอีกครั้ง', 2000);
                     });
                 };
             }
-            
-            // Close button handler
+
             if (closeShareBtn) {
                 closeShareBtn.onclick = () => {
                     shareModal.style.display = 'none';
                     shareModal.classList.remove('active');
                 };
             }
-            
-            // Close on overlay click
+
             shareModal.onclick = (e) => {
                 if (e.target === shareModal) {
                     shareModal.style.display = 'none';
