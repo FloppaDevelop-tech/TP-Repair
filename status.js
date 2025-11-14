@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadStatusReports();
 });
 
-// real-time update เมื่อ tab อื่นแก้ไข
+// ฟัง event จาก tab อื่น (admin อัปเดต)
 window.addEventListener('storage', (e) => {
     if (e.key === 'reports-updated') {
         loadStatusReports();
@@ -11,14 +11,15 @@ window.addEventListener('storage', (e) => {
 
 let statusDeleteTargetId = null;
 
-// โหลด report จาก server
+// โหลดข้อมูล report จาก server
 async function loadStatusReports() {
     const container = document.getElementById('report-cards');
     if (!container) return;
     container.innerHTML = '';
 
     try {
-        const res = await fetch('/api/reports/status');
+        // แก้ URL ให้ตรงกับ server
+        const res = await fetch('/api/reports'); 
         if (!res.ok) throw new Error('ไม่สามารถดึงข้อมูลได้');
         let reports = await res.json();
 
@@ -27,6 +28,7 @@ async function loadStatusReports() {
             return;
         }
 
+        // แสดงรายการล่าสุดก่อน
         reports.reverse().forEach(report => {
             const card = document.createElement('div');
             card.className = 'report-card';
@@ -69,7 +71,7 @@ async function loadStatusReports() {
     }
 }
 
-// แปลง status เป็น class
+// แปลงชื่อ status เป็น class
 function statusClass(status) {
     if (status === 'รอดำเนินการ') return 'status-pending';
     if (status === 'กำลังดำเนินการ') return 'status-inprogress';
@@ -77,7 +79,7 @@ function statusClass(status) {
     return '';
 }
 
-// ปลอดภัย: escape HTML
+// Escape HTML ป้องกัน injection
 function escapeHtml(input) {
     if (input === undefined || input === null) return '';
     return String(input)
@@ -143,7 +145,7 @@ function showStatusDeletePopup(id) {
 document.getElementById('confirmDelete').onclick = async () => {
     if(statusDeleteTargetId === null) return;
     try {
-        const res = await fetch(`/api/reports/status/${statusDeleteTargetId}`, { method: 'DELETE' });
+        const res = await fetch(`/api/reports/${statusDeleteTargetId}`, { method: 'DELETE' });
         if(!res.ok) throw new Error('ลบไม่สำเร็จ');
         statusDeleteTargetId = null;
         const deleteModal = document.getElementById('deleteModal');
@@ -163,14 +165,16 @@ document.getElementById('cancelDelete').onclick = () => {
     deleteModal.classList.remove('active');
 };
 
-// --- Share report ---
+// Share report
 async function shareStatusReport(reportId) {
     try {
         const response = await fetch(`/api/reports/share/${reportId}`, {
             method: 'POST',
             headers: {'Content-Type':'application/json'}
         });
+
         if (!response.ok) throw new Error('Failed to create share link');
+
         const data = await response.json();
         const shareUrl = data.shareUrl;
 
@@ -184,9 +188,7 @@ async function shareStatusReport(reportId) {
             shareModal.style.display = 'flex';
             shareModal.classList.add('active');
 
-            navigator.clipboard.writeText(shareUrl).catch(() => {
-                console.warn('Failed to copy to clipboard');
-            });
+            navigator.clipboard.writeText(shareUrl).catch(()=>{});
 
             if (copyShareBtn) {
                 copyShareBtn.onclick = () => {
