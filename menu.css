@@ -141,119 +141,41 @@ header {
 }
 
 @media (max-width: 768px) {
-  header {
-    padding: 8px 6px;
-  }
+    .sideMenu {
+        width: 240px;
+        left: -240px;
+        top: 0;
+    }
 
-  .header-left {
-    gap: 6px;
-    padding-left: 0;
-  }
-
-  .school-logo {
-    width: 32px;
-  }
-
-  .name {
-    font-size: 14px;
-  }
-
-  .detail {
-    font-size: 10px;
-  }
-
-  .hamburger {
-    font-size: 22px;
-  }
-
-  .menu-header {
-    padding-top: 12px;
-    gap: 8px;
-  }
-
-  .sideMenu {
-    width: 240px;
-    left: -240px;
-  }
-
-  .sideMenu a {
-    padding: 12px 14px;
-    font-size: 13px;
-    gap: 10px;
-  }
+    /* เพิ่ม padding-top ให้ sideMenu ไม่โดน header บัง */
+    .sideMenu.show {
+        padding-top: 5px; /* ปรับให้พอดีกับความสูง header */
+    }
 }
 
+
+/* Mobile & iPhone adjustments */
+/* ปรับเฉพาะมือถือ / iPhone */
 @media (max-width: 480px) {
-  header {
-    padding: 6px 4px;
-  }
+    .sideMenu.show {
+        /* เลื่อน link ลงมาพอให้ไม่โดน tab สีเขียวบัง */
+        padding-top: 5px; /* ปรับตามความสูง header จริง */
+    }
 
-  .header-left {
-    gap: 4px;
-  }
-
-  .school-logo {
-    width: 28px;
-  }
-
-  .name {
-    font-size: 12px;
-  }
-
-  .detail {
-    font-size: 9px;
-  }
-
-  .hamburger {
-    font-size: 20px;
-  }
-
-  .menu-header {
-    padding-top: 10px;
-    gap: 6px;
-  }
-
-  .sideMenu {
-    width: 200px;
-    left: -200px;
-  }
-
-  .sideMenu a {
-    padding: 10px 12px;
-    font-size: 12px;
-    gap: 8px;
-  }
+    .sideMenu a {
+        padding: 12px 14px;
+        font-size: 14px;
+    }
 }
 
+/* สำหรับ iPhone SE / ขนาดจอเล็ก */
 @media (max-width: 360px) {
-  header {
-    padding: 4px 2px;
-  }
+    .sideMenu.show {
+        padding-top: 5px;
+    }
 
-  .school-logo {
-    width: 24px;
-  }
-
-  .name {
-    font-size: 11px;
-  }
-
-  .detail {
-    font-size: 8px;
-  }
-
-  .hamburger {
-    font-size: 18px;
-  }
-
-  .sideMenu {
-    width: 180px;
-    left: -180px;
-  }
-
-  .sideMenu a {
-    padding: 8px 10px;
-    font-size: 11px;
-    gap: 6px;
-  }
+    .sideMenu a {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
 }
