@@ -7,18 +7,7 @@ const historyFile = path.join(DATA_DIR, "history.json");
 async function ensureDataDir() {
   try {
     await fs.mkdir(DATA_DIR, { recursive: true });
-  } catch (e) {
-    console.error("Cannot create data dir", e);
-  }
-}
-
-async function saveToFile(file, data) {
-  try {
-    await ensureDataDir();
-    await fs.writeFile(file, JSON.stringify(data, null, 2), "utf8");
-  } catch (e) {
-    console.error("Cannot save file", file, e);
-  }
+  } catch (e) {}
 }
 
 async function loadFromFile(file) {
@@ -44,7 +33,8 @@ export default async function handler(req, res) {
   }
 
   setCorsHeaders(res);
-
+  
+  // Load from file every time
   const historyReports = await loadFromFile(historyFile);
 
   try {

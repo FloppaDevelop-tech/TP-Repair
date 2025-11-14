@@ -9,9 +9,17 @@ const historyFile = path.join(DATA_DIR, "history.json");
 async function ensureDataDir() {
   try {
     await fs.mkdir(DATA_DIR, { recursive: true });
-  } catch (e) {
-    console.error("Cannot create data dir", e);
-  }
+  } catch (e) {}
+}
+
+async function loadFromFile(file) {
+  try {
+    await ensureDataDir();
+    const raw = await fs.readFile(file, "utf-8");
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) return parsed;
+  } catch (e) {}
+  return [];
 }
 
 async function saveToFile(file, data) {
@@ -23,14 +31,11 @@ async function saveToFile(file, data) {
   }
 }
 
-async function loadFromFile(file) {
-  try {
-    await ensureDataDir();
-    const raw = await fs.readFile(file, "utf-8");
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) return parsed;
-  } catch (e) {}
-  return [];
+async function loadAllStores() {
+  const status = await loadFromFile(statusFile);
+  const admin = await loadFromFile(adminFile);
+  const history = await loadFromFile(historyFile);
+  return { status, admin, history };
 }
 
 function createReportInStore(store, body) {
@@ -56,10 +61,10 @@ export default async function handler(req, res) {
   }
 
   setCorsHeaders(res);
-
-  const adminReports = await loadFromFile(adminFile);
-  const statusReports = await loadFromFile(statusFile);
-  const historyReports = await loadFromFile(historyFile);
+  
+  // Load from files every time
+  const stores = await loadAllStores();
+  let { status: statusReports, admin: adminReports, history: historyReports } = stores;
 
   try {
     if (req.method === 'GET') {
@@ -73,9 +78,11 @@ export default async function handler(req, res) {
       if (!statusReports.find((x) => x.id === r.id)) statusReports.push({ ...r });
       if (!historyReports.find((x) => x.id === r.id))
         historyReports.push({ ...r, archivedAt: new Date().toLocaleString("th-TH") });
+      
       await saveToFile(adminFile, adminReports);
       await saveToFile(statusFile, statusReports);
       await saveToFile(historyFile, historyReports);
+      
       return res.status(200).json(r);
     }
 

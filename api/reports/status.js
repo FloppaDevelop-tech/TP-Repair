@@ -10,16 +10,7 @@ async function ensureDataDir() {
   try {
     await fs.mkdir(DATA_DIR, { recursive: true });
   } catch (e) {
-    console.error("Cannot create data dir", e);
-  }
-}
-
-async function saveToFile(file, data) {
-  try {
-    await ensureDataDir();
-    await fs.writeFile(file, JSON.stringify(data, null, 2), "utf8");
-  } catch (e) {
-    console.error("Cannot save file", file, e);
+    // Ignore if directory already exists
   }
 }
 
@@ -29,8 +20,19 @@ async function loadFromFile(file) {
     const raw = await fs.readFile(file, "utf-8");
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) return parsed;
-  } catch (e) {}
+  } catch (e) {
+    // File doesn't exist yet, return empty array
+  }
   return [];
+}
+
+async function saveToFile(file, data) {
+  try {
+    await ensureDataDir();
+    await fs.writeFile(file, JSON.stringify(data, null, 2), "utf8");
+  } catch (e) {
+    console.error("Cannot save file", file, e);
+  }
 }
 
 async function loadAllStores() {
@@ -63,7 +65,8 @@ export default async function handler(req, res) {
   }
 
   setCorsHeaders(res);
-
+  
+  // Load from files every time to ensure data consistency
   const stores = await loadAllStores();
   let { status: statusReports, admin: adminReports, history: historyReports } = stores;
 
@@ -79,9 +82,12 @@ export default async function handler(req, res) {
       if (!adminReports.find((x) => x.id === r.id)) adminReports.push({ ...r });
       if (!historyReports.find((x) => x.id === r.id))
         historyReports.push({ ...r, archivedAt: new Date().toLocaleString("th-TH") });
+      
+      // Save all files
       await saveToFile(statusFile, statusReports);
       await saveToFile(adminFile, adminReports);
       await saveToFile(historyFile, historyReports);
+      
       return res.status(201).json({ message: "created", report: r });
     }
 
