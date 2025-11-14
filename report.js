@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let photoList = [];
 
   // --- API BASE ---
-  const API_BASE = 'app-tp-repair.vercel.app/api/reports';
+  const API_BASE = 'https://app-tp-repair.vercel.app/api/reports';
 
   // ตั้งค่าวันที่ default
   dateInput.valueAsDate = new Date();
