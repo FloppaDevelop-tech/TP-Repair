@@ -8,67 +8,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   dateInput.valueAsDate = new Date();
 
-  // เปิด file picker เมื่อกด label
-  if (fileLabel) {
-    fileLabel.addEventListener('click', (e) => {
-      e.preventDefault();
-      photoInput.click();
-    });
-  }
+  // เปิด file picker
+  fileLabel?.addEventListener('click', e => { e.preventDefault(); photoInput.click(); });
 
-  // เพิ่ม event listener สำหรับการเลือกไฟล์
-  photoInput.addEventListener('change', (e) => {
+  photoInput.addEventListener('change', e => {
     [...e.target.files].forEach(file => {
       if(!file.type.startsWith('image/')) return;
       const reader = new FileReader();
-      reader.onload = ev => { 
-        photoList.push(ev.target.result); 
-        renderPreview(); 
-      };
+      reader.onload = ev => { photoList.push(ev.target.result); renderPreview(); };
       reader.readAsDataURL(file);
     });
-    photoInput.value = ''; // Reset input
-  });
-
-  // Drag & drop
-  const dropZone = fileLabel;
-  dropZone.addEventListener('dragover', e => { 
-    e.preventDefault(); 
-    dropZone.classList.add('drag-over'); 
-  });
-  
-  dropZone.addEventListener('dragleave', e => { 
-    e.preventDefault(); 
-    dropZone.classList.remove('drag-over'); 
-  });
-  
-  dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('drag-over');
-    [...e.dataTransfer.files].forEach(file => {
-      if(!file.type.startsWith('image/')) return;
-      const reader = new FileReader();
-      reader.onload = ev => { 
-        photoList.push(ev.target.result); 
-        renderPreview(); 
-      };
-      reader.readAsDataURL(file);
-    });
+    photoInput.value = '';
   });
 
   function renderPreview() {
     previewContainer.innerHTML = '';
-    photoList.forEach((img, i) => {
+    photoList.forEach((img,i) => {
       const div = document.createElement('div');
       div.className = 'preview-box';
       div.innerHTML = `<img src="${img}">`;
       const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = 'x';
-      btn.onclick = () => { 
-        photoList.splice(i, 1); 
-        renderPreview(); 
-      };
+      btn.type='button';
+      btn.textContent='x';
+      btn.onclick = ()=>{ photoList.splice(i,1); renderPreview(); };
       div.appendChild(btn);
       previewContainer.appendChild(div);
     });
@@ -79,17 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if(message) popup.querySelector('p').textContent = message;
     popup.classList.add('active');
   }
-
   window.closePopup = () => document.getElementById('successPopup').classList.remove('active');
   window.closeWarningPopup = () => document.getElementById('warningPopup').classList.remove('active');
 
-  // Submit form
-  reportForm.addEventListener('submit', e => {
+  reportForm.addEventListener('submit', async e => {
     e.preventDefault();
-    if(photoList.length === 0) { 
-      showPopup("warningPopup", "กรุณาแนบภาพประกอบอย่างน้อย 1 รูป"); 
-      return; 
-    }
+    if(photoList.length===0){ showPopup('warningPopup','กรุณาแนบภาพประกอบอย่างน้อย 1 รูป'); return; }
 
     const newReport = {
       name: reportForm.name.value,
@@ -102,20 +59,21 @@ document.addEventListener("DOMContentLoaded", () => {
       timestamp: new Date().toLocaleString('th-TH')
     };
 
-    try {
-      // เก็บไว้ใน localStorage (เหมือนส่ง server)
-      const storedReports = JSON.parse(localStorage.getItem('reports') || '[]');
-      storedReports.push(newReport);
-      localStorage.setItem('reports', JSON.stringify(storedReports));
-
-      showPopup("successPopup");
+    try{
+      const res = await fetch('/api/reports/status', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(newReport)
+      });
+      if(!res.ok) throw new Error(await res.text().catch(()=>null) || 'ส่งไม่สำเร็จ');
+      showPopup('successPopup');
       reportForm.reset();
       photoList = [];
       renderPreview();
       dateInput.valueAsDate = new Date();
-    } catch(err){
+    }catch(err){
       console.error(err);
-      showPopup("warningPopup","เกิดข้อผิดพลาด กรุณาลองใหม่");
+      showPopup('warningPopup','เกิดข้อผิดพลาด กรุณาลองใหม่');
     }
   });
 });
