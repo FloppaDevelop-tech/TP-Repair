@@ -11,7 +11,7 @@ async function loadReports() {
   try {
     // --- API BASE ---
     const API_BASE = window.location.origin + '/api/reports';
-    const res = await fetch(API_BASE);
+    const res = await fetch(`${API_BASE}/status`);
     if (!res.ok) throw new Error('Failed to fetch reports');
     const reports = await res.json();
 
