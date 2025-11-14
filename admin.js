@@ -110,37 +110,110 @@ async function loadAdminReports() {
                 : '';
 
             card.innerHTML = `
-                <h3>${r.name || 'ไม่ระบุชื่อ'}</h3>
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                    <h3 style="margin: 0; flex: 1;">รายงาน #${r.id}</h3>
+                    <button class="edit-btn" style="background: #f5f9f7; color: #2d7a3e; border: 2px solid #2d7a3e; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600;">✏️ แก้ไข</button>
+                </div>
                 <div class="report-card-meta">
                     <div>
                         <p><strong>ID:</strong> #${r.id}</p>
-                        <p><strong>กลุ่มสาระ:</strong> ${r.grade || '-'}</p>
+                        <p><strong>กลุ่มสาระ:</strong> <span class="editable-field" data-field="grade">${r.grade || '-'}</span></p>
                     </div>
                     <div>
-                        <p><strong>วันที่:</strong> ${r.date || '-'}</p>
-                        <p><strong>สถานที่:</strong> ${r.place || '-'}</p>
+                        <p><strong>วันที่:</strong> <span class="editable-field" data-field="date">${r.date || '-'}</span></p>
+                        <p><strong>สถานที่:</strong> <span class="editable-field" data-field="place">${r.place || '-'}</span></p>
                     </div>
                 </div>
-                <p><strong>รายละเอียด:</strong> ${r.detail || '-'}</p>
+                <div style="margin: 12px 0;">
+                    <p><strong>ชื่อผู้แจ้ง:</strong></p>
+                    <span class="editable-field" data-field="name" style="display: block; padding: 8px; background: #f5f9f7; border-radius: 6px; margin-top: 4px;">${r.name || 'ไม่ระบุชื่อ'}</span>
+                </div>
+                <div style="margin: 12px 0;">
+                    <p><strong>รายละเอียด:</strong></p>
+                    <span class="editable-field" data-field="detail" style="display: block; padding: 8px; background: #f5f9f7; border-radius: 6px; margin-top: 4px; white-space: pre-wrap; min-height: 60px;">${r.detail || '-'}</span>
+                </div>
                 ${photosHtml}
-                <div>
+                <div style="margin: 12px 0;">
                     <p><strong>สถานะ:</strong></p>
-                    <select class="status-select">
+                    <select class="status-select" data-field="status">
                         <option value="รอดำเนินการ">รอดำเนินการ</option>
                         <option value="กำลังดำเนินการ">กำลังดำเนินการ</option>
                         <option value="เสร็จสิ้น">เสร็จสิ้น</option>
                     </select>
                 </div>
-                <div class="card-buttons">
-                    <button class="update-btn">อัปเดต</button>
-                    <button class="delete-btn">ลบ</button>
+                <div class="card-buttons" style="display: none;" id="editButtons-${r.id}">
+                    <button class="save-btn" data-id="${r.id}">💾 บันทึก</button>
+                    <button class="cancel-btn" data-id="${r.id}">❌ ยกเลิก</button>
+                </div>
+                <div class="card-buttons" id="viewButtons-${r.id}">
+                    <button class="update-btn" data-id="${r.id}">อัปเดตสถานะ</button>
+                    <button class="delete-btn" data-id="${r.id}">ลบ</button>
                 </div>
             `;
 
             const select = card.querySelector('.status-select');
             select.value = statusValue;
+            const editBtn = card.querySelector('.edit-btn');
+            const editButtons = card.querySelector(`#editButtons-${r.id}`);
+            const viewButtons = card.querySelector(`#viewButtons-${r.id}`);
+            const editableFields = card.querySelectorAll('.editable-field');
 
-            // Update status
+            let originalData = { ...r };
+
+            // Edit button - enable editing
+            editBtn.onclick = () => {
+                editButtons.style.display = 'flex';
+                viewButtons.style.display = 'none';
+                editBtn.style.display = 'none';
+                
+                editableFields.forEach(field => {
+                    const fieldName = field.dataset.field;
+                    const currentValue = field.textContent.trim();
+                    if (fieldName === 'detail') {
+                        field.innerHTML = `<textarea style="width: 100%; min-height: 80px; padding: 8px; border: 2px solid #2d7a3e; border-radius: 6px; font-family: inherit; resize: vertical;">${currentValue}</textarea>`;
+                    } else if (fieldName === 'date') {
+                        field.innerHTML = `<input type="date" value="${currentValue}" style="width: 100%; padding: 8px; border: 2px solid #2d7a3e; border-radius: 6px; font-family: inherit;">`;
+                    } else {
+                        field.innerHTML = `<input type="text" value="${currentValue}" style="width: 100%; padding: 8px; border: 2px solid #2d7a3e; border-radius: 6px; font-family: inherit;">`;
+                    }
+                });
+            };
+
+            // Save button
+            card.querySelector('.save-btn').onclick = async () => {
+                try {
+                    const updatedData = { ...originalData };
+                    
+                    editableFields.forEach(field => {
+                        const fieldName = field.dataset.field;
+                        const input = field.querySelector('input, textarea');
+                        if (input) {
+                            updatedData[fieldName] = input.value;
+                        }
+                    });
+                    
+                    updatedData.status = select.value;
+                    
+                    const res = await fetch(`${API_BASE}/admin/${r.id}`, {
+                        method: 'PATCH',
+                        headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify(updatedData)
+                    });
+                    if(!res.ok) throw new Error('Update failed');
+                    showAdminPopup('บันทึกการแก้ไขสำเร็จ', true);
+                    loadAdminReports();
+                } catch(e){
+                    showAdminPopup('บันทึกไม่สำเร็จ', false);
+                    console.error(e);
+                }
+            };
+
+            // Cancel button
+            card.querySelector('.cancel-btn').onclick = () => {
+                loadAdminReports();
+            };
+
+            // Update status only
             card.querySelector('.update-btn').onclick = async () => {
                 try {
                     const newStatus = select.value;
@@ -150,8 +223,7 @@ async function loadAdminReports() {
                         body: JSON.stringify({status:newStatus})
                     });
                     if(!res.ok) throw new Error('Update failed');
-                    showAdminPopup('อัปเดตสำเร็จ', true);
-                    try { localStorage.setItem('reports-updated', String(Date.now())); } catch(e){}
+                    showAdminPopup('อัปเดตสถานะสำเร็จ', true);
                     loadAdminReports();
                 } catch(e){
                     showAdminPopup('อัปเดตไม่สำเร็จ', false);
@@ -182,3 +254,4 @@ async function loadAdminReports() {
         console.error(e);
     }
 }
+

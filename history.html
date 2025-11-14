@@ -50,8 +50,8 @@
 </div>
 
 <!-- Popup รายละเอียด -->
-<div id="reportDetailModal" class="detail-popup">
-  <div class="detail-popup-content"></div>
+<div id="reportDetailModal" class="popup detail-popup">
+  <div class="popup-content detail-popup-content"></div>
 </div>
 
 <!-- Delete All Popup -->
@@ -65,17 +65,25 @@
   </div>
 </div>
 
+<!-- Popup รายละเอียด -->
+<div id="reportDetailModal" class="popup detail-popup">
+  <div class="popup-content detail-popup-content"></div>
+</div>
+
 <!-- Popup แชร์ -->
 <div id="shareModal" class="popup">
   <div class="popup-content share-popup">
+    <button class="close-detail" onclick="closeShareModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 28px; color: #2d7a3e; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s;">×</button>
     <div class="share-icon"></div>
-    <h3>ลิงก์แชร์</h3>
-    <p>ลิงก์แชร์ถูกคัดลอกแล้ว</p>
+    <h3>แชร์รายงาน</h3>
+    <p style="color: #666; margin-bottom: 20px;">ลิงก์แชร์ถูกคัดลอกแล้ว</p>
     <div class="share-url-container">
       <input type="text" id="shareUrlInput" readonly class="share-url-input">
     </div>
-    <button id="copyShareBtn" class="copy-btn">คัดลอกอีกครั้ง</button>
-    <button id="closeShareBtn" class="close-btn">ปิด</button>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button id="copyShareBtn" class="copy-btn" style="flex: 1;">คัดลอกอีกครั้ง</button>
+      <button id="openShareBtn" class="copy-btn" style="flex: 1; background: #fff; color: #2d7a3e; border: 2px solid #2d7a3e;">เปิดลิงก์</button>
+    </div>
   </div>
 </div>
 

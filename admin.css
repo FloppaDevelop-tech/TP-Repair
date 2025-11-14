@@ -238,6 +238,48 @@ h1 {
   color: #fff;
 }
 
+.save-btn {
+  background: #2d7a3e;
+  color: #fff;
+  border: none;
+}
+
+.save-btn:hover {
+  background: #245a30;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(45, 122, 62, 0.3);
+}
+
+.cancel-btn {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.cancel-btn:hover {
+  background: #e0e0e0;
+  border-color: #bbb;
+}
+
+.edit-btn {
+  transition: all 0.2s;
+}
+
+.edit-btn:hover {
+  background: #2d7a3e;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.editable-field {
+  transition: all 0.2s;
+  cursor: text;
+}
+
+.editable-field:hover {
+  background: #e8f5e9 !important;
+}
+
 /* Admin Popup Styles */
 .popup {
   display: flex;
