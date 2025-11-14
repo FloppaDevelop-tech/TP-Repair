@@ -4,13 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const photoInput = document.getElementById('photoInput');
   const previewContainer = document.getElementById('previewContainer');
   const fileLabel = document.getElementById('fileLabel');
-
-  const submitBtn = document.getElementById('submitBtn'); // 🔧 FIX
+  const submitBtn = document.getElementById('submitBtn');
 
   let photoList = [];
 
-  // --- API BASE ---
-  const API_BASE = 'https://app-tp-repair.vercel.app/api/reports';
+  // --- API BASE (Unified API) ---
+  const API_BASE = 'https://app-tp-repair.vercel.app/api/reports/all';
 
   // ตั้งค่าวันที่ default
   dateInput.valueAsDate = new Date();
@@ -40,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     photoList.forEach((img, i) => {
       const div = document.createElement('div');
       div.className = 'preview-box';
-      div.innerHTML = `<img src="${img}">`;
+      div.innerHTML = `<img src="${img}" alt="preview">`;
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.textContent = 'x';
@@ -53,22 +52,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ป๊อปอัพแบบกันพัง
+  // ป๊อปอัพ
   function showPopup(id, message = '') {
     const popup = document.getElementById(id);
     if (!popup) return;
-
     const p = popup.querySelector('p');
     if (message && p) p.textContent = message;
-
     popup.classList.add('active');
   }
 
-  window.closePopup = () =>
-    document.getElementById('successPopup')?.classList.remove('active');
-
-  window.closeWarningPopup = () =>
-    document.getElementById('warningPopup')?.classList.remove('active');
+  window.closePopup = () => document.getElementById('successPopup')?.classList.remove('active');
+  window.closeWarningPopup = () => document.getElementById('warningPopup')?.classList.remove('active');
 
   // ส่งข้อมูล
   async function submitReport(event) {
