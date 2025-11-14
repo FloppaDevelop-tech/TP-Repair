@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const fileLabel = document.getElementById('fileLabel');
   let photoList = [];
 
+  // --- BASE URL: localhost หรือ server จริง ---
+  const API_BASE = location.hostname === 'localhost'
+    ? 'http://localhost:3000/api/reports'
+    : 'https://your-server-domain.com/api/reports'; // เปลี่ยน URL เป็น server จริง
+
   dateInput.valueAsDate = new Date();
 
   // เปิด file picker
@@ -13,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   photoInput.addEventListener('change', e => {
     [...e.target.files].forEach(file => {
-      if(!file.type.startsWith('image/')) return;
+      if (!file.type.startsWith('image/')) return;
       const reader = new FileReader();
       reader.onload = ev => { photoList.push(ev.target.result); renderPreview(); };
       reader.readAsDataURL(file);
@@ -23,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderPreview() {
     previewContainer.innerHTML = '';
-    photoList.forEach((img,i) => {
+    photoList.forEach((img, i) => {
       const div = document.createElement('div');
       div.className = 'preview-box';
       div.innerHTML = `<img src="${img}">`;
@@ -60,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     try{
-      const res = await fetch('/api/reports/status', {
+      const res = await fetch(`${API_BASE}/status`, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify(newReport)
