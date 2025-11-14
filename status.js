@@ -2,53 +2,76 @@ document.addEventListener('DOMContentLoaded', () => {
     loadStatusReports();
 });
 
-// โหลดข้อมูล Status
-function loadStatusReports() {
+// listen to storage events from other tabs (e.g., admin page updates)
+window.addEventListener('storage', (e) => {
+    if (e.key === 'reports-updated') {
+        // another tab updated reports — refresh the list
+        loadStatusReports();
+    }
+});
+
+let statusDeleteTargetId = null;
+
+// โหลดข้อมูล report จาก server
+async function loadStatusReports() {
     const container = document.getElementById('report-cards');
     if (!container) return;
-
-    let reports = JSON.parse(localStorage.getItem('repairReports')) || [];
     container.innerHTML = '';
 
-    if (reports.length === 0) {
-        container.innerHTML = '<p>ยังไม่มีรายการแจ้งซ่อม</p>';
-        return;
+    try {
+    const res = await fetch('/api/reports/status'); 
+        if (!res.ok) throw new Error('ไม่สามารถดึงข้อมูลได้');
+        let reports = await res.json();
+
+        if (reports.length === 0) {
+            container.innerHTML = '<p>ยังไม่มีรายการแจ้งซ่อม</p>';
+            return;
+        }
+
+        // แสดงรายการล่าสุดก่อน
+        reports.reverse().forEach(report => {
+            const card = document.createElement('div');
+            card.className = 'report-card';
+
+            const info = document.createElement('div');
+            info.className = 'card-info';
+            info.innerHTML = `
+                <h3>${report.name} (${report.grade})</h3>
+                <p><strong>รหัส:</strong> ${report.id}</p>
+                <p>วันที่: ${report.date}</p>
+                <p>สถานที่: ${report.place}</p>
+                <p>สถานะ: <span class="${statusClass(report.status)}">${report.status}</span></p>
+            `;
+
+            const btns = document.createElement('div');
+            btns.className = 'card-buttons';
+
+            const detailBtn = document.createElement('button');
+            detailBtn.className = 'details-btn';
+            detailBtn.textContent = 'รายละเอียด';
+            detailBtn.onclick = () => showStatusDetail(report);
+
+            const shareBtn = document.createElement('button');
+            shareBtn.className = 'share-btn';
+            shareBtn.textContent = 'แชร์';
+            shareBtn.onclick = () => shareStatusReport(report.id);
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'delete-btn';
+            delBtn.textContent = 'ลบ';
+            delBtn.onclick = () => showStatusDeletePopup(report.id);
+
+            btns.append(detailBtn, shareBtn, delBtn);
+            card.append(info, btns);
+            container.appendChild(card);
+        });
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<p>เกิดข้อผิดพลาดในการโหลดข้อมูล</p>`;
     }
-
-    reports.reverse().forEach(report => {
-        const card = document.createElement('div');
-        card.className = 'report-card';
-
-        const info = document.createElement('div');
-        info.className = 'card-info';
-        info.innerHTML = `
-            <p><strong>รหัส:</strong> ${report.id}</p>
-            <h3>${report.name}</h3>
-            <p>กลุ่มสาระ: ${report.grade}</p>
-            <p>วันที่: ${report.date}</p>
-            <p>สถานที่: ${report.place}</p>
-            <p>สถานะ: <span class="${statusClass(report.status)}">${report.status}</span></p>
-        `;
-
-        const btns = document.createElement('div');
-        btns.className = 'card-buttons';
-
-        const detailBtn = document.createElement('button');
-        detailBtn.className = 'details-btn';
-        detailBtn.textContent = 'รายละเอียด';
-        detailBtn.onclick = () => showStatusDetail(report);
-
-        const delBtn = document.createElement('button');
-        delBtn.className = 'delete-btn';
-        delBtn.textContent = 'ลบ';
-        delBtn.onclick = () => showStatusDeletePopup(report.id);
-
-        btns.append(detailBtn, delBtn);
-        card.append(info, btns);
-        container.appendChild(card);
-    });
 }
 
+// แปลงชื่อ status เป็น class
 function statusClass(status) {
     if (status === 'รอดำเนินการ') return 'status-pending';
     if (status === 'กำลังดำเนินการ') return 'status-inprogress';
@@ -56,103 +79,164 @@ function statusClass(status) {
     return '';
 }
 
-// === POPUP รายละเอียด Status ===
+// ปลอดภัย: escape HTML text to avoid injection when using innerHTML
+function escapeHtml(input) {
+    if (input === undefined || input === null) return '';
+    return String(input)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// --- Popup รายละเอียด ---
 function showStatusDetail(report) {
+    // always ensure modal element exists
     let modal = document.getElementById('statusDetailModal');
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'statusDetailModal';
-        modal.style.cssText = `
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            background:rgba(0,0,0,0.5);display:flex;
-            justify-content:center;align-items:center;z-index:1000;
-        `;
-        modal.innerHTML = `
-            <div style="background:white;padding:20px;border-radius:10px;
-                        max-width:600px;width:90%;max-height:80%;overflow-y:auto;">
-                <h2></h2>
-                <p><strong>รหัส:</strong> </p>
-                <p><strong>วันที่:</strong> </p>
-                <p><strong>สถานที่:</strong> </p>
-                <p><strong>รายละเอียด:</strong> </p>
-                <div id="statusPhotoContainer" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;"></div>
-                <button id="closeStatusModal" style="margin-top:15px;
-                        padding:8px 16px;background:#007a3d;color:white;
-                        border:none;border-radius:6px;cursor:pointer;">ปิด</button>
-            </div>
-        `;
+        modal.className = 'detail-popup';
         document.body.appendChild(modal);
-        document.getElementById('closeStatusModal').onclick = () => modal.style.display = 'none';
     }
 
-    const content = modal.querySelector('div');
-    modal.querySelector('h2').textContent = `${report.name} (${report.grade})`;
-    modal.querySelector('p:nth-of-type(1)').innerHTML = `<strong>รหัส:</strong> ${report.id}`;
-    modal.querySelector('p:nth-of-type(2)').innerHTML = `<strong>วันที่:</strong> ${report.date}`;
-    modal.querySelector('p:nth-of-type(3)').innerHTML = `<strong>สถานที่:</strong> ${report.place}`;
-    modal.querySelector('p:nth-of-type(4)').innerHTML = `<strong>รายละเอียด:</strong> ${report.detail}`;
+    // safe fallbacks for fields
+    const safe = v => (v === undefined || v === null || v === '') ? '-' : v;
 
-    const photoContainer = modal.querySelector('#statusPhotoContainer');
+    // update content every time so stale values (or typos) don't persist
+    modal.innerHTML = `
+        <div class="detail-popup-content">
+            <h2>${escapeHtml(safe(report.name))} (${escapeHtml(safe(report.grade))})</h2>
+            <p><strong>รหัส:</strong> ${escapeHtml(safe(report.id))}</p>
+            <p><strong>วันที่:</strong> ${escapeHtml(safe(report.date))}</p>
+            <p><strong>สถานที่:</strong> ${escapeHtml(safe(report.place))}</p>
+            <p><strong>รายละเอียด:</strong> ${escapeHtml(safe(report.detail))}</p>
+            <div class="detail-popup-photos"></div>
+            <button id="closeStatusModal" class="close-detail">ปิด</button>
+        </div>
+    `;
+
+    const photoContainer = modal.querySelector('.detail-popup-photos');
     photoContainer.innerHTML = '';
-    if (report.photos && report.photos.length > 0) {
+    if(report.photos && report.photos.length > 0) {
         report.photos.forEach(src => {
-            const imgCard = document.createElement('div');
-            imgCard.style.cssText = 'flex:0 0 45%;border:1px solid #ccc;padding:5px;border-radius:5px;';
+            const photoBox = document.createElement('div');
+            photoBox.className = 'photo-box';
             const img = document.createElement('img');
             img.src = src;
-            img.style.width = '100%';
-            img.style.height = 'auto';
-            img.style.display = 'block';
-            imgCard.appendChild(img);
-            photoContainer.appendChild(imgCard);
+            photoBox.appendChild(img);
+            photoContainer.appendChild(photoBox);
         });
     }
 
-    modal.style.display = 'flex';
+    // wire close button after content update
+    const closeBtn = document.getElementById('closeStatusModal');
+    if (closeBtn) closeBtn.onclick = () => modal.classList.remove('active');
+
+    modal.classList.add('active');
 }
 
-// === POPUP ลบ Status ===
-let statusDeleteTargetId = null;
+// --- Popup ลบรายการ ---
 function showStatusDeletePopup(id) {
     statusDeleteTargetId = id;
-    let popup = document.getElementById('statusDeleteModal');
-    if (!popup) {
-        popup = document.createElement('div');
-        popup.id = 'statusDeleteModal';
-        popup.style.cssText = `
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            background:rgba(0,0,0,0.4);display:flex;
-            justify-content:center;align-items:center;z-index:1001;
-        `;
-        popup.innerHTML = `
-            <div style="background:#fff;padding:25px;width:320px;
-                        text-align:center;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.15);">
-                <h3>ยืนยันการลบ</h3>
-                <p>คุณต้องการลบรายการนี้หรือไม่?</p>
-                <button id="confirmStatusDelete" style="margin:10px 5px;
-                        padding:8px 18px;background:#dc3545;color:white;
-                        border:none;border-radius:6px;cursor:pointer;">ลบ</button>
-                <button id="cancelStatusDelete" style="margin:10px 5px;
-                        padding:8px 18px;background:#6c757d;color:white;
-                        border:none;border-radius:6px;cursor:pointer;">ยกเลิก</button>
-            </div>
-        `;
-        document.body.appendChild(popup);
-
-        document.getElementById('confirmStatusDelete').onclick = () => {
-            if (statusDeleteTargetId === null) return;
-            let reports = JSON.parse(localStorage.getItem('repairReports')) || [];
-            reports = reports.filter(r => r.id !== statusDeleteTargetId);
-            localStorage.setItem('repairReports', JSON.stringify(reports));
-            statusDeleteTargetId = null;
-            popup.style.display = 'none';
-            loadStatusReports();
-        };
-
-        document.getElementById('cancelStatusDelete').onclick = () => {
-            statusDeleteTargetId = null;
-            popup.style.display = 'none';
-        };
-    }
+    let popup = document.getElementById('deleteModal');
+    if (!popup) return;
     popup.style.display = 'flex';
+    popup.classList.add('active');
+}
+
+document.getElementById('confirmDelete').onclick = async () => {
+    if(statusDeleteTargetId === null) return;
+    try {
+        const res = await fetch(`/api/reports/status/${statusDeleteTargetId}`, { method: 'DELETE' });
+        if(!res.ok) throw new Error('ลบไม่สำเร็จ');
+        statusDeleteTargetId = null;
+        const deleteModal = document.getElementById('deleteModal');
+        deleteModal.style.display = 'none';
+        deleteModal.classList.remove('active');
+        loadStatusReports();
+    } catch(err) {
+        console.error(err);
+        alert('ไม่สามารถลบข้อมูลได้');
+    }
+};
+
+document.getElementById('cancelDelete').onclick = () => {
+    statusDeleteTargetId = null;
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.style.display = 'none';
+    deleteModal.classList.remove('active');
+};
+
+// Share report function
+async function shareStatusReport(reportId) {
+    try {
+        const response = await fetch(`/api/reports/share/${reportId}`, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'}
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to create share link');
+        }
+
+        const data = await response.json();
+        const shareUrl = data.shareUrl;
+        
+        // Show share popup
+        const shareModal = document.getElementById('shareModal');
+        const shareUrlInput = document.getElementById('shareUrlInput');
+        const copyShareBtn = document.getElementById('copyShareBtn');
+        const closeShareBtn = document.getElementById('closeShareBtn');
+        
+        if (shareModal && shareUrlInput) {
+            shareUrlInput.value = shareUrl;
+            shareModal.style.display = 'flex';
+            shareModal.classList.add('active');
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl).catch(() => {
+                console.warn('Failed to copy to clipboard');
+            });
+            
+            // Copy button handler
+            if (copyShareBtn) {
+                copyShareBtn.onclick = () => {
+                    navigator.clipboard.writeText(shareUrl).then(() => {
+                        copyShareBtn.textContent = 'คัดลอกแล้ว!';
+                        setTimeout(() => {
+                            copyShareBtn.textContent = 'คัดลอกอีกครั้ง';
+                        }, 2000);
+                    }).catch(() => {
+                        shareUrlInput.select();
+                        document.execCommand('copy');
+                        copyShareBtn.textContent = 'คัดลอกแล้ว!';
+                        setTimeout(() => {
+                            copyShareBtn.textContent = 'คัดลอกอีกครั้ง';
+                        }, 2000);
+                    });
+                };
+            }
+            
+            // Close button handler
+            if (closeShareBtn) {
+                closeShareBtn.onclick = () => {
+                    shareModal.style.display = 'none';
+                    shareModal.classList.remove('active');
+                };
+            }
+            
+            // Close on overlay click
+            shareModal.onclick = (e) => {
+                if (e.target === shareModal) {
+                    shareModal.style.display = 'none';
+                    shareModal.classList.remove('active');
+                }
+            };
+        }
+    } catch(err){
+        console.error('Error sharing report:', err);
+        alert('เกิดข้อผิดพลาดในการแชร์ กรุณาลองใหม่');
+    }
 }

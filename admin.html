@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - TP Maintenance</title>
+  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="menu.css">
+</head>
+<body>
+    <header>
+  <div class="header-left">
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <a href="icon.html" style="text-decoration: none; display: flex; align-items: center;">
+      <img src="taweethapisek logo.png" alt="School Logo" class="school-logo" style="cursor: pointer;">
+    </a>
+    <div class="title-text">
+      <p class="name">TP Maintenance</p>
+      <p class="detail">ระบบแจ้งซ่อม</p>
+    </div>
+  </div>
+</header>
+
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<div class="sideMenu" id="sideMenu">
+  <div class="menu-header"></div>
+  <a href="report.html">แจ้งซ่อม</a>
+  <a href="status.html">สถานะการซ่อม</a>
+  <a href="history.html">ประวัติการแจ้งซ่อม</a>
+   <a href="admin.html">Admin Panel</a>
+</div>
+
+<main>
+  <h1>ระบบจัดการรายงาน</h1>
+
+  <div id="reportContainer" class="report-container">
+    <!-- cards will be loaded here -->
+  </div>
+</main>
+
+  <script src="admin.js"></script>
+  <script src="menu.js"></script>
+</body>
+</html>

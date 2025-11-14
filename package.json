@@ -1,0 +1,27 @@
+{
+  "name": "app-tp-repair",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "admin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FloppaDevelop-tech/TP-Repair.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FloppaDevelop-tech/TP-Repair/issues"
+  },
+  "homepage": "https://github.com/FloppaDevelop-tech/TP-Repair#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0"
+  }
+}

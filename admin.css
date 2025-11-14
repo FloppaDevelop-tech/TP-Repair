@@ -1,0 +1,527 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Prompt", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f5f5f5;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  margin: 30px 0 20px;
+  padding: 20px 0;
+  color: #2d7a3e;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.report-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 20px 30px 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+.report-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 20px;
+  border-left: 4px solid #2d7a3e;
+  display: flex;
+  flex-direction: column;
+}
+
+.report-card h3 {
+  margin: 0 0 12px 0;
+  color: #1a1a1a;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.report-card-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.report-card-meta p {
+  margin: 4px 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.report-card-meta strong {
+  color: #333;
+}
+
+.photo-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.admin-photo {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #e0e0e0;
+}
+
+.admin-photo:hover {
+  transform: scale(1.05);
+  border-color: #2d7a3e;
+}
+
+.report-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.report-card h3 {
+  margin: 12px 0 8px;
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.report-card-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.report-card p {
+  margin: 8px 0;
+  color: #666;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.report-card strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.photo-gallery {
+  margin: 16px 0;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.photo-gallery img.admin-photo {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.photo-gallery img.admin-photo:hover {
+  transform: scale(1.05);
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status.pending {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+}
+
+.status.in-progress {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #17a2b8;
+}
+
+.status.done {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #28a745;
+}
+
+.status-select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-family: "Prompt", sans-serif;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin: 12px 0;
+}
+
+.status-select:hover {
+  border-color: #2d7a3e;
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: #2d7a3e;
+  box-shadow: 0 0 0 2px rgba(45, 122, 62, 0.1);
+}
+
+.card-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.card-buttons button {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: "Prompt", sans-serif;
+}
+
+.update-btn {
+  background: #2d7a3e;
+  color: #fff;
+}
+
+.update-btn:hover {
+  background: #245a30;
+}
+
+.update-btn:active {
+  transform: translateY(1px);
+}
+
+.delete-btn {
+  background: #f8f8f8;
+  color: #d32f2f;
+  border: 1px solid #d32f2f;
+}
+
+.delete-btn:hover {
+  background: #d32f2f;
+  color: #fff;
+}
+
+/* Admin Popup Styles */
+.popup {
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.popup.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.popup-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  max-width: 420px;
+  width: 90%;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.popup-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.success-icon {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.success-icon::after {
+  content: '✓';
+}
+
+.warning-icon {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.warning-icon::after {
+  content: '!';
+}
+
+.popup-content h3 {
+  margin: 0 0 12px 0;
+  color: #1a1a1a;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.popup-content p {
+  color: #666;
+  margin: 12px 0 24px;
+  font-size: 0.95rem;
+}
+
+.popup-content button {
+  padding: 10px 20px;
+  margin: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: "Prompt", sans-serif;
+  transition: all 0.2s;
+}
+
+.popup-content .close-btn {
+  background: #2d7a3e;
+  color: #fff;
+}
+
+.popup-content .close-btn:hover {
+  background: #245a30;
+}
+
+.popup-content .delete-btn {
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+}
+
+.popup-content .delete-btn:hover {
+  background: #b71c1c;
+}
+
+/* Responsive Admin */
+@media (max-width: 1024px) {
+  h1 {
+    font-size: 1.6rem;
+    margin: 20px 0 16px;
+  }
+
+  .report-container {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    padding: 16px 20px 20px;
+    gap: 16px;
+  }
+
+  .report-card {
+    padding: 16px;
+  }
+
+  .report-card h3 {
+    font-size: 1rem;
+  }
+
+  .photo-gallery {
+    gap: 6px;
+    margin: 10px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.4rem;
+    margin: 16px 0 12px;
+    padding: 16px 0;
+  }
+
+  .report-container {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .report-card {
+    padding: 12px;
+  }
+
+  .report-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+  }
+
+  .report-card p {
+    font-size: 0.85rem;
+    margin: 4px 0;
+  }
+
+  .report-card-meta {
+    gap: 8px;
+  }
+
+  .report-card-meta p {
+    font-size: 0.8rem;
+  }
+
+  .photo-gallery {
+    gap: 4px;
+    margin: 8px 0;
+    padding: 8px;
+  }
+
+  .admin-photo {
+    height: 60px;
+  }
+
+  .status-select {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+
+  .card-buttons {
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .card-buttons button {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+
+  .popup-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .popup-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.1rem;
+    margin: 12px 0 8px;
+  }
+
+  .report-container {
+    grid-template-columns: 1fr;
+    padding: 8px;
+    gap: 10px;
+  }
+
+  .report-card {
+    padding: 10px;
+  }
+
+  .report-card h3 {
+    font-size: 0.9rem;
+  }
+
+  .report-card p {
+    font-size: 0.8rem;
+  }
+
+  .report-card-meta {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .photo-gallery {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 3px;
+  }
+
+  .admin-photo {
+    height: 50px;
+  }
+
+  .status-select {
+    padding: 6px;
+    font-size: 0.8rem;
+  }
+
+  .card-buttons {
+    gap: 4px;
+  }
+
+  .card-buttons button {
+    padding: 6px;
+    font-size: 0.75rem;
+  }
+
+  .popup-content {
+    width: 98%;
+    padding: 16px;
+  }
+
+  .popup-content h3 {
+    font-size: 1.1rem;
+  }
+
+  .popup-content p {
+    font-size: 0.85rem;
+  }
+
+  .popup-content button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}

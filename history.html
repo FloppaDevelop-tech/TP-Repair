@@ -4,59 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ประวัติการแจ้งซ่อม | TP-Maintenance</title>
-  <link rel="stylesheet" href="history.css">
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="menu.css">
 </head>
 <body>
-
-  <!-- Header + Menu -->
-  <header>
-      <div class="header-left">
-          <div class="hamburger" onclick="toggleMenu()">☰</div>
-          <img src="taweethapisek logo.png" alt="School Logo" class="school-logo">
-          <div class="title-text">
-              <p class="name">TP Maintenance</p>
-              <p class="detail">ระบบแจ้งซ่อม</p>
-          </div>
-      </div>
-  </header>
-
-  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-
-  <div class="sideMenu" id="sideMenu">
-      <div class="menu-header"></div>
-      <a href="report.html">แจ้งซ่อม</a>
-      <a href="status.html">สถานะการซ่อม</a>
-      <a href="history.html">ประวัติการแจ้งซ่อม</a>
+<header>
+  <div class="header-left">
+    <div class="hamburger" onclick="toggleMenu()">☰</div>
+    <a href="icon.html" style="text-decoration: none; display: flex; align-items: center;">
+      <img src="taweethapisek logo.png" alt="School Logo" class="school-logo" style="cursor: pointer;">
+    </a>
+    <div class="title-text">
+      <p class="name">TP Maintenance</p>
+      <p class="detail">ระบบแจ้งซ่อม</p>
+    </div>
   </div>
+</header>
 
-  <!-- Content -->
-  <div class="page-content">
-      <h2 class="page-title">ประวัติการแจ้งซ่อม</h2>
-      <button id="deleteAllBtn">ลบทั้งหมด</button>
-      <div id="history-cards" class="cards-container"></div>
-  </div>
+<div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+<div class="sideMenu" id="sideMenu">
+  <div class="menu-header"></div>
+  <a href="report.html">แจ้งซ่อม</a>
+  <a href="status.html">สถานะการซ่อม</a>
+  <a href="history.html">ประวัติการแจ้งซ่อม</a>
+  <a href="admin.html">Admin Panel</a>
+</div>
 
-  <!-- Popup ลบ -->
-  <div id="deleteModal" class="popup">
-      <div class="popup-content">
-          <p>คุณต้องการลบรายการนี้หรือไม่?</p>
-          <button id="confirmDelete">ลบ</button>
-          <button id="cancelDelete">ยกเลิก</button>
-      </div>
+<div class="page-content">
+  <h1 class="page-title">ประวัติการแจ้งซ่อม</h1>
+  <button id="deleteAllBtn" class="delete-all-btn">ลบทั้งหมด</button>
+  <div id="history-cards" class="report-cards">
+    <!-- Card จะถูกสร้างด้วย JS -->
   </div>
+</div>
 
-  <!-- Popup รายละเอียด -->
-  <div id="reportDetailModal">
-      <div class="modal-content"></div>
+<!-- Popup ลบรายการ History -->
+<div id="deleteModal" class="popup">
+  <div class="popup-content">
+    <div class="success-icon"></div>
+    <h3>ลบรายการแจ้งซ่อม</h3>
+    <p>คุณแน่ใจว่าต้องการลบรายการนี้หรือไม่?</p>
+    <button id="confirmDelete" class="delete-btn">ยืนยันลบ</button>
+    <button id="cancelDelete" class="close-btn">ยกเลิก</button>
   </div>
-  <!-- Delete All Popup -->
+</div>
+
+<!-- Popup รายละเอียด -->
+<div id="reportDetailModal" class="detail-popup">
+  <div class="detail-popup-content"></div>
+</div>
+
+<!-- Delete All Popup -->
 <div id="deleteAllPopup" class="popup">
   <div class="popup-content">
-    <h3>ลบประวัติทั้งหมด?</h3>
+    <div class="success-icon"></div>
+    <h3>ลบประวัติทั้งหมด</h3>
     <p>คุณแน่ใจว่าต้องการลบประวัติการแจ้งซ่อมทั้งหมดหรือไม่?</p>
-    <button id="confirmDeleteAll">ใช่, ลบเลย</button>
-    <button id="cancelDeleteAll">ยกเลิก</button>
+    <button id="confirmDeleteAll" class="delete-btn">ยืนยันลบ</button>
+    <button id="cancelDeleteAll" class="close-btn">ยกเลิก</button>
+  </div>
+</div>
+
+<!-- Popup แชร์ -->
+<div id="shareModal" class="popup">
+  <div class="popup-content share-popup">
+    <div class="share-icon"></div>
+    <h3>ลิงก์แชร์</h3>
+    <p>ลิงก์แชร์ถูกคัดลอกแล้ว</p>
+    <div class="share-url-container">
+      <input type="text" id="shareUrlInput" readonly class="share-url-input">
+    </div>
+    <button id="copyShareBtn" class="copy-btn">คัดลอกอีกครั้ง</button>
+    <button id="closeShareBtn" class="close-btn">ปิด</button>
   </div>
 </div>
 
