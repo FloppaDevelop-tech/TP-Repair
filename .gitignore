@@ -1,34 +1,12 @@
-# Environment variables
-.env
-.env.local
-.env.*.local
-
-# Dependencies
 node_modules/
-package-lock.json
-yarn.lock
-
-# IDE
+.env
+*.log
+.DS_Store
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
 
-# Temporary files
-tmp_*.js
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-npm-debug.log
-
-# Data files (optional - uncomment if you don't want to track data)
+# Data files (optional - ถ้าต้องการเก็บใน git ให้ลบบรรทัดนี้)
 # status.json
 # admin.json
 # history.json
 # shared-reports.json
-.vercel

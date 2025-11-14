@@ -13,9 +13,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // --- Middleware ---
-// อนุญาตโดเมน Vercel
+// อนุญาตทุก origin (สำหรับ production ควรระบุ domain ที่แน่นอน)
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://tp-repair.vercel.app', 'https://app-tp-repair.vercel.app'],
+  origin: '*', // เปลี่ยนเป็น domain ที่แน่นอนใน production
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -268,9 +268,15 @@ app.post("/api/reports/all", (req, res) => {
 
 // --- Server start ---
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on Vercel (port ${PORT})`);
-});
 
-// Export for Vercel serverless functions
-module.exports = app;
+// Start server (สำหรับ hosting ที่รองรับ Node.js เช่น Render, Railway, Fly.io)
+// ตรวจสอบว่าไม่ได้รันใน Vercel environment
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📁 Data files: ${__dirname}`);
+  });
+}
+
+// Export for Vercel serverless functions (ถ้ายังใช้ Vercel)
+export default app;
