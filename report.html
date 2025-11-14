@@ -11,7 +11,9 @@
 <header>
   <div class="header-left">
     <div class="hamburger" onclick="toggleMenu()">☰</div>
-    <img src="taweethapisek logo.png" alt="School Logo" class="school-logo">
+    <a href="icon.html" style="text-decoration: none; display: flex; align-items: center;">
+      <img src="taweethapisek logo.png" alt="School Logo" class="school-logo" style="cursor: pointer;">
+    </a>
     <div class="title-text">
       <p class="name">TP Maintenance</p>
       <p class="detail">ระบบแจ้งซ่อม</p>
@@ -25,31 +27,47 @@
   <a href="report.html">แจ้งซ่อม</a>
   <a href="status.html">สถานะการซ่อม</a>
   <a href="history.html">ประวัติการแจ้งซ่อม</a>
+   <a href="admin.html">Admin Panel</a>
 </div>
 
 <div class="container">
   <h2>แจ้งซ่อม</h2>
 
   <form id="maintenanceForm">
-    <label>ชื่อ-สกุลผู้แจ้ง</label>
-    <input type="text" name="name" required>
+    <div class="form-group">
+      <label>ชื่อ-สกุลผู้แจ้ง</label>
+      <input type="text" name="name" required>
+    </div>
 
-    <label>กลุ่มสาระการเรียนรู้/กลุ่มงานบริหาร</label>
-    <input type="text" name="grade" required>
+    <div class="form-group">
+      <label>กลุ่มสาระการเรียนรู้/กลุ่มงานบริหาร</label>
+      <input type="text" name="grade" required>
+    </div>
 
-    <label>วันที่</label>
-    <input type="date" name="date" required>
+    <div class="form-row">
+      <div class="form-group">
+        <label>วันที่</label>
+        <input type="date" name="date" required>
+      </div>
 
-    <label>สถานที่</label>
-    <input type="text" name="place" required>
+      <div class="form-group">
+        <label>สถานที่</label>
+        <input type="text" name="place" required>
+      </div>
+    </div>
 
-    <label>รายละเอียดของปัญหา</label>
-    <textarea name="detail" rows="4" required></textarea>
+    <div class="form-group">
+      <label>รายละเอียดของปัญหา</label>
+      <textarea name="detail" rows="4" required></textarea>
+    </div>
 
-    <label>ภาพประกอบ (จำเป็นต้องมีอย่างน้อย 1 ภาพ)*</label>
-    <div class="file-upload-wrapper">
-      <label class="file-upload-label" id="fileLabel">📷 เลือกรูปภาพ</label>
-      <input type="file" id="photoInput" accept="image/*" multiple>
+    <div class="form-group">
+      <label>ภาพประกอบ (จำเป็นต้องมีอย่างน้อย 1 ภาพ)</label>
+      <div class="file-upload-wrapper">
+        <label class="file-upload-label" id="fileLabel">เลือกรูปภาพหรือลากวางที่นี่</label>
+        <input type="file" id="photoInput" accept="image/*" multiple>
+      </div>
+    </div>
     </div>
 
     <div id="previewContainer" class="preview-container card-grid"></div>
@@ -60,13 +78,19 @@
 <!-- Success Popup -->
 <div id="successPopup" class="popup">
   <div class="popup-content">
-    <img src="taweethapisek logo.png" class="popup-logo" alt="Logo">
-    <h2>Report Success!</h2>
-    <button class="close-btn" onclick="closePopup()">ปิด</button>
+    <div class="success-icon"></div>
+    <h3>ส่งรายงานสำเร็จ</h3>
+    <p>รายงานของคุณถูกบันทึกแล้ว</p>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button class="close-btn" onclick="closePopup()" style="flex: 1;">ปิด</button>
+    </div>
   </div>
 </div>
+
 <div id="warningPopup" class="popup">
   <div class="popup-content">
+    <div class="warning-icon"></div>
+    <h3>ข้อผิดพลาด</h3>
     <p></p>
     <button class="close-btn" onclick="closeWarningPopup()">ปิด</button>
   </div>
