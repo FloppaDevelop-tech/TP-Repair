@@ -13,7 +13,7 @@
 
     body {
       font-family: "Prompt", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -23,11 +23,12 @@
 
     .container {
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-      max-width: 700px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(45, 122, 62, 0.15);
+      max-width: 800px;
       width: 100%;
       padding: 40px;
+      border: 1px solid #e8f5e9;
     }
 
     .loading {
@@ -220,13 +221,16 @@
     }
 
     .btn-print {
-      background: #f0f0f0;
-      color: #333;
+      background: #fff;
+      color: #2d7a3e;
+      border: 2px solid #2d7a3e;
     }
 
     .btn-print:hover {
-      background: #e0e0e0;
+      background: #2d7a3e;
+      color: #fff;
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(45, 122, 62, 0.3);
     }
 
     .copy-notification {
@@ -308,13 +312,16 @@
     @media print {
       body {
         background: white;
-        padding: 0;
+        padding: 20px;
+        display: block;
       }
 
       .container {
         box-shadow: none;
-        padding: 0;
+        border: 1px solid #ddd;
+        padding: 30px;
         max-width: 100%;
+        margin: 0 auto;
       }
 
       .actions {
@@ -324,10 +331,38 @@
       .photos-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .report-header {
+        border-bottom: 2px solid #2d7a3e;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+      }
+
+      .report-title {
+        color: #2d7a3e !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .info-item {
+        border-left: 3px solid #2d7a3e !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .status-badge {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
       }
 
       .page-break {
         page-break-after: always;
+      }
+
+      @page {
+        margin: 1cm;
       }
     }
   </style>
@@ -410,30 +445,26 @@
   </div>
 
   <script>
-    // Get share key from URL
-    function getShareKey() {
+    // Get report ID from URL
+    function getReportId() {
       const params = new URLSearchParams(window.location.search);
-      return params.get('key');
+      return params.get('id');
     }
 
     async function loadSharedReport() {
-      const shareKey = getShareKey();
+      const reportId = getReportId();
       
-      if (!shareKey) {
-        showError('ไม่พบลิงก์แชร์', 'URL ไม่ถูกต้อง');
+      if (!reportId) {
+        showError('ไม่พบรายงาน', 'URL ไม่ถูกต้อง');
         return;
       }
 
       try {
-        const response = await fetch(`/api/reports/shared/${shareKey}`);
+        const API_BASE = window.location.origin + '/api/reports';
+        const response = await fetch(`${API_BASE}/status/${reportId}`);
         
         if (response.status === 404) {
-          showError('ไม่พบรายงาน', 'ลิงก์นี้อาจถูกลบแล้ว');
-          return;
-        }
-        
-        if (response.status === 410) {
-          showError('ลิงก์หมดอายุ', 'ลิงก์แชร์นี้หมดอายุแล้ว (7 วัน)');
+          showError('ไม่พบรายงาน', 'รายงานนี้อาจถูกลบแล้ว');
           return;
         }
         
@@ -441,8 +472,8 @@
           throw new Error('Failed to load report');
         }
 
-        const data = await response.json();
-        displayReport(data.originalData);
+        const report = await response.json();
+        displayReport(report);
         
       } catch (error) {
         console.error('Error loading report:', error);

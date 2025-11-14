@@ -99,18 +99,145 @@ document.getElementById('cancelDelete').addEventListener('click', e => {
 
 // --- Detail & Share ---
 function showDetail(report) {
-  let photos = '';
+  const modal = document.getElementById('detailModal');
+  const title = document.getElementById('detailTitle');
+  const content = document.getElementById('detailContent');
+  
+  if (!modal || !title || !content) return;
+  
+  // Status badge
+  let statusClass = 'status-pending';
+  if (report.status === 'กำลังดำเนินการ') statusClass = 'status-inprogress';
+  if (report.status === 'เสร็จสิ้น') statusClass = 'status-completed';
+  
+  // Photos
+  let photosHtml = '';
   if (report.photos && report.photos.length > 0) {
-    photos = report.photos.map(p => `<img src="${p}" style="max-width:80px;margin:2px">`).join('');
+    photosHtml = `
+      <div class="detail-popup-photos">
+        ${report.photos.map((p, i) => `<img src="${p}" alt="ภาพที่ ${i + 1}" onclick="openImageModal('${p}')">`).join('')}
+      </div>
+    `;
+  } else {
+    photosHtml = '<p style="color: #999; text-align: center; padding: 20px;">ไม่มีภาพประกอบ</p>';
   }
-  alert(
-    `รายละเอียด:\nชื่อ: ${report.name}\nรหัส: ${report.id}\nสถานะ: ${report.status}\nวันที่: ${report.date}\nสถานที่: ${report.place}\nรายละเอียด: ${report.detail}\nรูปภาพ:\n${photos}`
-  );
+  
+  title.textContent = `${report.name} (${report.grade || '-'})`;
+  content.innerHTML = `
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+      <div style="background: #f5f9f7; padding: 12px; border-radius: 6px; border-left: 3px solid #2d7a3e;">
+        <strong style="color: #2d7a3e; font-size: 0.85rem; text-transform: uppercase;">รหัส</strong>
+        <p style="margin: 5px 0 0 0; color: #333; font-size: 1rem;">${report.id}</p>
+      </div>
+      <div style="background: #f5f9f7; padding: 12px; border-radius: 6px; border-left: 3px solid #2d7a3e;">
+        <strong style="color: #2d7a3e; font-size: 0.85rem; text-transform: uppercase;">สถานะ</strong>
+        <p style="margin: 5px 0 0 0;"><span class="${statusClass}">${report.status || 'รอดำเนินการ'}</span></p>
+      </div>
+      <div style="background: #f5f9f7; padding: 12px; border-radius: 6px; border-left: 3px solid #2d7a3e;">
+        <strong style="color: #2d7a3e; font-size: 0.85rem; text-transform: uppercase;">วันที่</strong>
+        <p style="margin: 5px 0 0 0; color: #333; font-size: 1rem;">${report.date || report.timestamp || '-'}</p>
+      </div>
+      <div style="background: #f5f9f7; padding: 12px; border-radius: 6px; border-left: 3px solid #2d7a3e;">
+        <strong style="color: #2d7a3e; font-size: 0.85rem; text-transform: uppercase;">สถานที่</strong>
+        <p style="margin: 5px 0 0 0; color: #333; font-size: 1rem;">${report.place || '-'}</p>
+      </div>
+    </div>
+    <div style="margin-bottom: 20px;">
+      <strong style="color: #2d7a3e; font-size: 0.9rem; text-transform: uppercase; display: block; margin-bottom: 8px;">รายละเอียดปัญหา</strong>
+      <div style="background: #f5f9f7; padding: 15px; border-radius: 6px; color: #333; line-height: 1.6; white-space: pre-wrap;">${report.detail || '-'}</div>
+    </div>
+    <div>
+      <strong style="color: #2d7a3e; font-size: 0.9rem; text-transform: uppercase; display: block; margin-bottom: 8px;">ภาพประกอบ</strong>
+      ${photosHtml}
+    </div>
+  `;
+  
+  modal.style.display = 'flex';
+  modal.classList.add('active');
 }
+
+function closeDetailModal() {
+  const modal = document.getElementById('detailModal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('active');
+  }
+}
+
+// Close detail modal when clicking outside
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('detailModal');
+  if (modal && e.target === modal) {
+    closeDetailModal();
+  }
+});
 
 function shareReport(id) {
   const url = `${window.location.origin}/share.html?id=${id}`;
-  navigator.clipboard.writeText(url)
-    .then(() => alert('ลิงก์ถูกคัดลอกแล้ว!'))
-    .catch(() => alert('ไม่สามารถคัดลอกลิงก์ได้'));
+  const modal = document.getElementById('shareModal');
+  const urlInput = document.getElementById('shareUrlInput');
+  const copyBtn = document.getElementById('copyShareBtn');
+  const openBtn = document.getElementById('openShareBtn');
+  
+  if (!modal || !urlInput) return;
+  
+  urlInput.value = url;
+  modal.style.display = 'flex';
+  modal.classList.add('active');
+  
+  // Copy to clipboard
+  navigator.clipboard.writeText(url).catch(() => {});
+  
+  // Copy button
+  if (copyBtn) {
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(url).then(() => {
+        copyBtn.textContent = 'คัดลอกแล้ว!';
+        setTimeout(() => copyBtn.textContent = 'คัดลอกอีกครั้ง', 2000);
+      }).catch(() => {
+        urlInput.select();
+        document.execCommand('copy');
+        copyBtn.textContent = 'คัดลอกแล้ว!';
+        setTimeout(() => copyBtn.textContent = 'คัดลอกอีกครั้ง', 2000);
+      });
+    };
+  }
+  
+  // Open button
+  if (openBtn) {
+    openBtn.onclick = () => {
+      window.open(url, '_blank');
+    };
+  }
+}
+
+function closeShareModal() {
+  const modal = document.getElementById('shareModal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('active');
+  }
+}
+
+// Close share modal when clicking outside
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('shareModal');
+  if (modal && e.target === modal) {
+    closeShareModal();
+  }
+});
+
+// Image modal
+function openImageModal(src) {
+  const modal = document.createElement('div');
+  modal.className = 'image-modal';
+  modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; align-items: center; justify-content: center; cursor: pointer;';
+  modal.innerHTML = `
+    <img src="${src}" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px;">
+    <button onclick="this.parentElement.remove()" style="position: absolute; top: 20px; right: 20px; background: #fff; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; color: #2d7a3e; font-weight: bold;">×</button>
+  `;
+  modal.onclick = (e) => {
+    if (e.target === modal) modal.remove();
+  };
+  document.body.appendChild(modal);
 }
