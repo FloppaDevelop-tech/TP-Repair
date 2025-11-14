@@ -15,7 +15,7 @@ const app = express();
 // --- Middleware ---
 // อนุญาตโดเมน Vercel
 app.use(cors({
-  origin: ['https://tp-repair.vercel.app'],
+  origin: ['http://localhost:3000', 'https://tp-repair.vercel.app', 'https://app-tp-repair.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -271,3 +271,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on Vercel (port ${PORT})`);
 });
+
+// Export for Vercel serverless functions
+module.exports = app;

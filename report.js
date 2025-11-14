@@ -4,21 +4,32 @@ document.addEventListener("DOMContentLoaded", () => {
   const photoInput = document.getElementById('photoInput');
   const previewContainer = document.getElementById('previewContainer');
   const fileLabel = document.getElementById('fileLabel');
+
+  const submitBtn = document.getElementById('submitBtn'); // 🔧 FIX
+
   let photoList = [];
 
   // --- API BASE ---
-  const API_BASE = 'https://tp-repair.vercel.app/api/reports';
+  const API_BASE = 'https://app-tp-repair.vercel.app/api/reports';
 
+  // ตั้งค่าวันที่ default
   dateInput.valueAsDate = new Date();
 
   // เปิด file picker
-  fileLabel?.addEventListener('click', e => { e.preventDefault(); photoInput.click(); });
+  fileLabel?.addEventListener('click', e => {
+    e.preventDefault();
+    photoInput.click();
+  });
 
+  // เลือกรูป
   photoInput.addEventListener('change', e => {
     [...e.target.files].forEach(file => {
       if (!file.type.startsWith('image/')) return;
       const reader = new FileReader();
-      reader.onload = ev => { photoList.push(ev.target.result); renderPreview(); };
+      reader.onload = ev => {
+        photoList.push(ev.target.result);
+        renderPreview();
+      };
       reader.readAsDataURL(file);
     });
     photoInput.value = '';
@@ -31,30 +42,43 @@ document.addEventListener("DOMContentLoaded", () => {
       div.className = 'preview-box';
       div.innerHTML = `<img src="${img}">`;
       const btn = document.createElement('button');
-      btn.type='button';
-      btn.textContent='x';
-      btn.onclick = () => { photoList.splice(i, 1); renderPreview(); };
+      btn.type = 'button';
+      btn.textContent = 'x';
+      btn.onclick = () => {
+        photoList = photoList.filter((_, idx) => idx !== i);
+        renderPreview();
+      };
       div.appendChild(btn);
       previewContainer.appendChild(div);
     });
   }
 
-  function showPopup(id, message='') {
+  // ป๊อปอัพแบบกันพัง
+  function showPopup(id, message = '') {
     const popup = document.getElementById(id);
-    if(message) popup.querySelector('p').textContent = message;
+    if (!popup) return;
+
+    const p = popup.querySelector('p');
+    if (message && p) p.textContent = message;
+
     popup.classList.add('active');
   }
-  window.closePopup = () => document.getElementById('successPopup').classList.remove('active');
-  window.closeWarningPopup = () => document.getElementById('warningPopup').classList.remove('active');
 
+  window.closePopup = () =>
+    document.getElementById('successPopup')?.classList.remove('active');
+
+  window.closeWarningPopup = () =>
+    document.getElementById('warningPopup')?.classList.remove('active');
+
+  // ส่งข้อมูล
   async function submitReport(event) {
     event.preventDefault();
-    if(photoList.length === 0){ 
-      showPopup('warningPopup','กรุณาแนบภาพประกอบอย่างน้อย 1 รูป'); 
-      return; 
+
+    if (photoList.length === 0) {
+      showPopup('warningPopup', 'กรุณาแนบภาพอย่างน้อย 1 รูป');
+      return;
     }
 
-    const submitBtn = document.querySelector('.submit-btn');
     const originalText = submitBtn.textContent;
 
     try {
@@ -62,23 +86,23 @@ document.addEventListener("DOMContentLoaded", () => {
       submitBtn.textContent = 'กำลังส่ง...';
 
       const reportData = {
-        name: document.getElementById('name').value.trim(),
-        grade: document.getElementById('grade').value,
-        place: document.getElementById('place').value.trim(),
-        detail: document.getElementById('detail').value.trim(),
+        name: document.querySelector('input[name="name"]').value.trim(),
+        grade: document.querySelector('input[name="grade"]').value.trim(),
+        place: document.querySelector('input[name="place"]').value.trim(),
+        detail: document.querySelector('textarea[name="detail"]').value.trim(),
         date: new Date().toLocaleString("th-TH"),
         status: 'รอดำเนินการ',
         photos: photoList
       };
 
-      const res = await fetch(`${API_BASE}/status`, {
+      const res = await fetch(API_BASE, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reportData)
       });
 
-      if(!res.ok) {
-        const text = await res.text().catch(()=>null);
+      if (!res.ok) {
+        const text = await res.text().catch(() => null);
         throw new Error(text || 'ส่งไม่สำเร็จ');
       }
 
@@ -87,12 +111,12 @@ document.addEventListener("DOMContentLoaded", () => {
       photoList = [];
       renderPreview();
 
-      // notify other pages
-      try { localStorage.setItem('reports-updated', String(Date.now())); } catch(e) {}
+      // แจ้งหน้าอื่นว่ามีข้อมูลใหม่
+      try { localStorage.setItem('reports-updated', String(Date.now())); } catch (_) {}
 
     } catch (error) {
       console.error('Submit error:', error);
-      showPopup('warningPopup','เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่');
+      showPopup('warningPopup', 'เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่');
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;

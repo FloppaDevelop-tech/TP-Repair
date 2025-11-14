@@ -31,3 +31,4 @@ npm-debug.log
 # admin.json
 # history.json
 # shared-reports.json
+.vercel

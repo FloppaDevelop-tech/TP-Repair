@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(loadAdminReports, 5000); // auto-refresh ทุก 5 วินาที
 });
 
-const API_BASE = 'https://tp-repair.vercel.app/api/reports';
+// --- API BASE ---
+const API_BASE = 'https://app-tp-repair.vercel.app/api/reports';
 
 // --- Popup ---
 function showAdminPopup(message, isSuccess = true) {

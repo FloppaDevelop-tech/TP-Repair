@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const confirmDeleteAllBtn = document.getElementById('confirmDeleteAll');
     const cancelDeleteAllBtn = document.getElementById('cancelDeleteAll');
 
-    const API_BASE = 'https://tp-repair.vercel.app/api/reports';
+    const API_BASE = 'https://app-tp-repair.vercel.app/api/reports';
 
     if (confirmDeleteAllBtn) {
         confirmDeleteAllBtn.onclick = async () => {
@@ -45,7 +45,7 @@ async function loadHistoryReports() {
     const container = document.getElementById('history-cards');
     if (!container) return;
 
-    const API_BASE = 'https://tp-repair.vercel.app/api/reports';
+    const API_BASE = 'https://app-tp-repair.vercel.app/api/reports';
 
     try {
         const res = await fetch(`${API_BASE}/history`);
@@ -160,7 +160,7 @@ function showDeletePopup(id){
 document.getElementById('confirmDelete').onclick = async () => {
     if(deleteTargetId === null) return;
     try {
-        const API_BASE = 'https://tp-repair.vercel.app/api/reports';
+        const API_BASE = 'https://app-tp-repair.vercel.app/api/reports';
         await fetch(`${API_BASE}/history/${deleteTargetId}`, { method: 'DELETE' });
         deleteTargetId = null;
         const deleteModal = document.getElementById('deleteModal');
@@ -183,7 +183,7 @@ document.getElementById('cancelDelete').onclick = () => {
 // --- Share report ---
 async function shareHistoryReport(reportId) {
     try {
-        const API_BASE = 'https://tp-repair.vercel.app/api/reports';
+        const API_BASE = 'https://app-tp-repair.vercel.app/api/reports';
         const response = await fetch(`${API_BASE}/history/${reportId}/share`, {
             method: 'POST',
             headers: {'Content-Type':'application/json'}
