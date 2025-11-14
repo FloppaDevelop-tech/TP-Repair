@@ -1,7 +1,26 @@
+let autoRefreshInterval = null;
+let isEditingMode = false;
+
 document.addEventListener('DOMContentLoaded', () => {
     loadAdminReports();
-    setInterval(loadAdminReports, 5000); // auto-refresh ทุก 5 วินาที
+    startAutoRefresh();
 });
+
+function startAutoRefresh() {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    autoRefreshInterval = setInterval(() => {
+        if (!isEditingMode) {
+            loadAdminReports();
+        }
+    }, 5000); // auto-refresh ทุก 5 วินาที (เฉพาะเมื่อไม่ได้อยู่ในโหมดแก้ไข)
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
 
 // --- API BASE ---
 const API_BASE = window.location.origin + '/api/reports';
@@ -162,6 +181,8 @@ async function loadAdminReports() {
 
             // Edit button - enable editing
             editBtn.onclick = () => {
+                isEditingMode = true;
+                stopAutoRefresh();
                 editButtons.style.display = 'flex';
                 viewButtons.style.display = 'none';
                 editBtn.style.display = 'none';
@@ -201,6 +222,8 @@ async function loadAdminReports() {
                     });
                     if(!res.ok) throw new Error('Update failed');
                     showAdminPopup('บันทึกการแก้ไขสำเร็จ', true);
+                    isEditingMode = false;
+                    startAutoRefresh();
                     loadAdminReports();
                 } catch(e){
                     showAdminPopup('บันทึกไม่สำเร็จ', false);
@@ -210,6 +233,8 @@ async function loadAdminReports() {
 
             // Cancel button
             card.querySelector('.cancel-btn').onclick = () => {
+                isEditingMode = false;
+                startAutoRefresh();
                 loadAdminReports();
             };
 

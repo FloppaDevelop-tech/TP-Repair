@@ -67,7 +67,6 @@ async function loadHistoryReports() {
                     <p><strong>รหัส:</strong> ${report.id}</p>
                     <p>วันที่: ${report.date || report.timestamp}</p>
                     <p>สถานที่: ${report.place || '-'}</p>
-                    <p>สถานะ: <span class="${statusClass(report.status)}">${report.status || 'รอดำเนินการ'}</span></p>
                 </div>
                 <div class="card-buttons">
                     <button type="button" class="details-btn">รายละเอียด</button>
