@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // --- API BASE ---
-const API_BASE = 'https://app-tp-repair.vercel.app/api/reports';
+const API_BASE = window.location.origin + '/api/reports';
 
 // --- Popup ---
 function showAdminPopup(message, isSuccess = true) {

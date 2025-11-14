@@ -10,7 +10,7 @@ async function loadReports() {
 
   try {
     // --- API BASE ---
-    const API_BASE = 'https://app-tp-repair.vercel.app/api/reports';
+    const API_BASE = window.location.origin + '/api/reports';
     const res = await fetch(API_BASE);
     if (!res.ok) throw new Error('Failed to fetch reports');
     const reports = await res.json();
@@ -71,7 +71,8 @@ document.getElementById('confirmDelete').addEventListener('click', async (e) => 
   if (!deleteTargetId) return;
 
   try {
-    const res = await fetch(`https://app-tp-repair.vercel.app/api/reports/${deleteTargetId}`, {
+    const API_BASE = window.location.origin + '/api/reports';
+    const res = await fetch(`${API_BASE}/status/${deleteTargetId}`, {
       method: 'DELETE'
     });
     if (!res.ok) throw new Error('Delete failed');
@@ -108,7 +109,7 @@ function showDetail(report) {
 }
 
 function shareReport(id) {
-  const url = `https://app-tp-repair.vercel.app/share/${id}`;
+  const url = `${window.location.origin}/share.html?id=${id}`;
   navigator.clipboard.writeText(url)
     .then(() => alert('ลิงก์ถูกคัดลอกแล้ว!'))
     .catch(() => alert('ไม่สามารถคัดลอกลิงก์ได้'));
