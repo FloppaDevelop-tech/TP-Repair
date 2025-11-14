@@ -8,16 +8,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   dateInput.valueAsDate = new Date();
 
-  // เปิด file picker เมื่อกด label
+  // เปิด file picker
   if (fileLabel) {
-    fileLabel.addEventListener('click', (e) => {
+    fileLabel.addEventListener('click', e => {
       e.preventDefault();
       photoInput.click();
     });
   }
 
-  // เพิ่ม event listener สำหรับการเลือกไฟล์
-  photoInput.addEventListener('change', (e) => {
+  // เลือกไฟล์
+  photoInput.addEventListener('change', e => {
     [...e.target.files].forEach(file => {
       if(!file.type.startsWith('image/')) return;
       const reader = new FileReader();
@@ -27,21 +27,13 @@ document.addEventListener("DOMContentLoaded", () => {
       };
       reader.readAsDataURL(file);
     });
-    photoInput.value = ''; // Reset input
+    photoInput.value = '';
   });
 
   // Drag & drop
   const dropZone = fileLabel;
-  dropZone.addEventListener('dragover', e => { 
-    e.preventDefault(); 
-    dropZone.classList.add('drag-over'); 
-  });
-  
-  dropZone.addEventListener('dragleave', e => { 
-    e.preventDefault(); 
-    dropZone.classList.remove('drag-over'); 
-  });
-  
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); });
   dropZone.addEventListener('drop', e => {
     e.preventDefault();
     dropZone.classList.remove('drag-over');
@@ -104,17 +96,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const submitBtn = document.getElementById('submitBtn');
     try {
       if(submitBtn) submitBtn.disabled = true;
-      const res = await fetch('/api/reports/status', {
+
+      // เปลี่ยนเป็น endpoint server รองรับ
+      const res = await fetch('/api/reports', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify(newReport)
       });
+
       if(!res.ok) throw new Error(await res.text().catch(()=>null) || 'ส่งไม่สำเร็จ');
+
       showPopup("successPopup");
       reportForm.reset();
       photoList = [];
       renderPreview();
       dateInput.valueAsDate = new Date();
+
     } catch(err){
       console.error(err);
       showPopup("warningPopup","เกิดข้อผิดพลาด กรุณาลองใหม่");
