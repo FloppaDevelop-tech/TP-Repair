@@ -16,6 +16,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // เปิด file picker เมื่อกด input (สำหรับการกดเลือกรูป)
+  if (photoInput) {
+    photoInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      files.forEach(file => {
+        if(!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = ev => { 
+          photoList.push(ev.target.result); 
+          renderPreview(); 
+        };
+        reader.readAsDataURL(file);
+      });
+      // Reset input เพื่อให้สามารถเลือกไฟล์เดิมได้อีกครั้ง
+      e.target.value = '';
+    });
+  }
+
   // Drag & drop
   const dropZone = fileLabel;
   dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
@@ -36,11 +54,17 @@ document.addEventListener("DOMContentLoaded", () => {
     photoList.forEach((img, i) => {
       const div = document.createElement('div');
       div.className = 'preview-box';
-      div.innerHTML = `<img src="${img}">`;
+      div.innerHTML = `<img src="${img}" alt="Preview ${i + 1}">`;
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.textContent = 'x';
-      btn.onclick = () => { photoList.splice(i, 1); renderPreview(); };
+      btn.className = 'remove-photo-btn';
+      btn.innerHTML = '×';
+      btn.setAttribute('aria-label', 'ลบรูปภาพ');
+      btn.onclick = (e) => { 
+        e.stopPropagation();
+        photoList.splice(i, 1); 
+        renderPreview(); 
+      };
       div.appendChild(btn);
       previewContainer.appendChild(div);
     });

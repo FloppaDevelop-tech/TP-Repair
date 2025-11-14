@@ -719,32 +719,41 @@ a {
   border-radius: 6px;
 }
 
-.preview-box button {
+.preview-box button,
+.preview-box .remove-photo-btn {
   position: absolute;
-  top: -9px;
-  right: 2px;
-  background: rgba(211, 47, 47, 0.85);
+  top: -6px;
+  right: -6px;
+  background: #dc3545;
   color: #fff;
-  border: none;
+  border: 2px solid #fff;
   border-radius: 50%;
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   padding: 0;
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   z-index: 10;
   line-height: 1;
+  font-family: Arial, sans-serif;
 }
 
-.preview-box button:hover {
-  background: #b71c1c;
-  transform: scale(1.2);
+.preview-box button:hover,
+.preview-box .remove-photo-btn:hover {
+  background: #c82333;
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+.preview-box button:active,
+.preview-box .remove-photo-btn:active {
+  transform: scale(0.95);
 }
 .detail-popup-photos {
   display: grid;
@@ -778,62 +787,335 @@ a {
   from {opacity: 0; transform: scale(0.9);}
   to {opacity: 1; transform: scale(1);}
 }
-@media (max-width: 600px) {
-  .container {
-    width: 90%;         
-    margin: 50px auto; 
-    padding: 20px;     
-  }
 
-  .form-row {
-    grid-template-columns: 1fr; 
-  }
-
-  
-  .preview-container {
-    justify-content: center;
-  }
-
-  .container form button {
-    align-self: center;
-    width: 100%;
-  }
-}
-
-/* iPhone Portrait */
-@media (max-width: 428px) {
-  .container {
-    width: 90%;          /* กว้างพอดีหน้าจอ */
-    margin: 50px auto;   /* กลางหน้าจอแนวนอน */
-    padding: 20px;       /* ลด padding */
-  }
-
-  .form-row {
-    grid-template-columns: 1fr; /* ซ้อนเป็นแถวเดียว */
-  }
-
-  /* ให้ preview รูปอยู่กลาง */
-  .preview-container {
-    justify-content: center;
-  }
-
-  /* ปรับปุ่มส่งให้สวยกลาง */
-  .container form button {
-    width: 100%;       /* เต็ม container */
-    margin: 20px auto 0 auto;
-    display: block;
-  }
-}
-
-/* iPhone Landscape */
-@media (max-width: 736px) and (orientation: landscape) {
-  .container {
-    width: 70%;         /* กว้างขึ้นเล็กน้อย */
-    margin: 30px auto;
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .page-content {
     padding: 20px;
   }
 
+  .report-cards {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .page-title {
+    font-size: 1.6rem;
+  }
+
+  .container {
+    max-width: 100%;
+    margin: 60px 10px 20px;
+    padding: 30px 20px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+  .nav-desktop {
+    display: none;
+  }
+
+  .page-content {
+    padding: 16px;
+    margin-top: 60px;
+  }
+
+  .page-title {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+
+  .report-cards {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .report-card {
+    padding: 16px;
+  }
+
+  .report-card h3 {
+    font-size: 1rem;
+  }
+
+  .report-card p {
+    font-size: 0.85rem;
+  }
+
+  .card-buttons {
+    gap: 8px;
+  }
+
+  .card-buttons button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .container {
+    max-width: 100%;
+    margin: 60px 10px 20px;
+    padding: 20px 16px;
+  }
+
+  .container h2 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .container form label {
+    font-size: 0.9rem;
+  }
+
+  .container form input,
+  .container form textarea {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .container form button {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+
+  .file-upload-label {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
   .preview-container {
-    justify-content: flex-start; /* landscape อาจไม่ต้องกลาง */
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .detail-popup-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .detail-popup-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .detail-popup-photos {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 8px;
+  }
+
+  .popup-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .popup-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .popup-content p {
+    font-size: 0.9rem;
+  }
+
+  .popup-content button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  .page-content {
+    padding: 12px;
+    margin-top: 50px;
+  }
+
+  .page-title {
+    font-size: 1.2rem;
+    margin-bottom: 16px;
+  }
+
+  .report-cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .report-card {
+    padding: 12px;
+  }
+
+  .report-card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+  }
+
+  .report-card p {
+    font-size: 0.8rem;
+    margin: 4px 0;
+  }
+
+  .report-card-meta {
+    gap: 8px;
+  }
+
+  .card-buttons {
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .card-buttons button {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+
+  .container {
+    margin: 50px 8px 16px;
+    padding: 16px 12px;
+  }
+
+  .container h2 {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 12px;
+  }
+
+  .container form label {
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+
+  .container form input,
+  .container form textarea,
+  .container form select {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+
+  .container form textarea {
+    min-height: 70px;
+  }
+
+  .container form button {
+    padding: 10px;
+    font-size: 0.9rem;
+    margin-top: 16px;
+  }
+
+  .file-upload-label {
+    padding: 10px;
+    font-size: 0.85rem;
+  }
+
+  .preview-container {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 8px;
+    margin: 12px 0;
+    padding: 8px;
+  }
+
+  .preview-box button {
+    width: 16px;
+    height: 16px;
+    font-size: 11px;
+  }
+
+  .detail-popup-content {
+    width: 98%;
+    padding: 16px;
+    max-height: 90vh;
+  }
+
+  .detail-popup-content h2 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+  }
+
+  .detail-popup-content p {
+    margin: 8px 0;
+    font-size: 0.85rem;
+  }
+
+  .detail-popup-photos {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 6px;
+    margin: 12px 0;
+  }
+
+  .detail-popup-photos img {
+    height: 70px;
+  }
+
+  .popup-content {
+    width: 98%;
+    padding: 16px;
+  }
+
+  .popup-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+  }
+
+  .popup-content h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .popup-content p {
+    font-size: 0.85rem;
+    margin: 8px 0 16px;
+  }
+
+  .popup-content button {
+    padding: 8px 12px;
+    margin: 6px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .page-title {
+    font-size: 1rem;
+  }
+
+  .report-card h3 {
+    font-size: 0.9rem;
+  }
+
+  .card-buttons button {
+    font-size: 0.7rem;
+    padding: 4px 6px;
+  }
+
+  .container h2 {
+    font-size: 1rem;
+  }
+
+  .container form label {
+    font-size: 0.8rem;
+  }
+
+  .popup-content h3 {
+    font-size: 1rem;
   }
 }
