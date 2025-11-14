@@ -117,6 +117,89 @@ TP-Maintenance Team
 
 ---
 
+## 🌐 การ Deploy บน Vercel
+
+### วิธีที่ 1: ผ่าน Vercel CLI (แนะนำ)
+
+1. ติดตั้ง Vercel CLI:
+```bash
+npm i -g vercel
+```
+
+2. Login บน Vercel:
+```bash
+vercel login
+```
+
+3. Deploy โปรเจค:
+```bash
+vercel
+```
+
+4. ตั้งค่า Project Settings บน Vercel Dashboard:
+   - Build Command: `npm install`
+   - Output Directory: `.`
+   - Install Command: `npm install`
+
+### วิธีที่ 2: ผ่าน GitHub
+
+1. Push โค้ดขึ้น GitHub:
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/yourusername/tp-repair.git
+git push -u origin main
+```
+
+2. เชื่อมต่อกับ Vercel:
+   - ไปที่ https://vercel.com
+   - Import Git Repository
+   - เลือก repo ของคุณ
+   - คลิก Deploy
+
+### การตั้งค่า Vercel
+
+ใน Vercel Dashboard ให้ตั้งค่าดังนี้:
+
+**Build Settings:**
+- Build Command: `npm install`
+- Output Directory: `.`
+- Install Command: `npm install`
+
+**Environment Variables:**
+- NODE_ENV: `production`
+
+**Domain:**
+- หลังจาก deploy จะได้ domain เช่น `tp-repair.vercel.app`
+
+## 🔄 โหมดการทำงานของระบบ
+
+ระบบนี้รองรับ 2 โหมดการทำงาน:
+
+1. **Server Mode** - เมื่อมี Node.js server ทำงาน
+   - ใช้ API endpoints สำหรับจัดการข้อมูล
+   - ข้อมูลถูกเก็บในไฟล์ JSON บน server
+   - รองรับการทำงานพร้อมกันหลายผู้ใช้
+
+2. **Static Mode** - เมื่อ deploy บน static hosting
+   - ใช้ localStorage สำหรับเก็บข้อมูล
+   - ทำงานได้แม้ไม่มี server
+   - เหมาะสำหรับ GitHub Pages หรือ static hosting
+
+## 📱 API Endpoints
+
+- `GET /api/reports/status` - ดูรายงานสถานะ
+- `GET /api/reports/admin` - ดูรายงาน admin
+- `GET /api/reports/history` - ดูประวัติ
+- `GET /api/reports/all` - ดูทั้งหมด
+- `POST /api/reports/status` - สร้างรายงานใหม่
+- `PATCH /api/reports/admin/:id` - อัปเดตสถานะ
+- `DELETE /api/reports/:type/:id` - ลบรายงาน
+
+---
+
 **Version**: 1.0  
-**Last Updated**: 2024
+**Last Updated**: 2025
 

@@ -6,10 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const fileLabel = document.getElementById('fileLabel');
   let photoList = [];
 
-  // --- BASE URL: localhost หรือ server จริง ---
-  const API_BASE = location.hostname === 'localhost'
-    ? 'http://localhost:3000/api/reports'
-    : 'https://your-server-domain.com/api/reports'; // เปลี่ยน URL เป็น server จริง
+  // --- API BASE ---
+  const API_BASE = 'https://tp-repair.vercel.app/api/reports';
 
   dateInput.valueAsDate = new Date();
 
@@ -35,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const btn = document.createElement('button');
       btn.type='button';
       btn.textContent='x';
-      btn.onclick = ()=>{ photoList.splice(i,1); renderPreview(); };
+      btn.onclick = () => { photoList.splice(i, 1); renderPreview(); };
       div.appendChild(btn);
       previewContainer.appendChild(div);
     });
@@ -49,36 +47,57 @@ document.addEventListener("DOMContentLoaded", () => {
   window.closePopup = () => document.getElementById('successPopup').classList.remove('active');
   window.closeWarningPopup = () => document.getElementById('warningPopup').classList.remove('active');
 
-  reportForm.addEventListener('submit', async e => {
-    e.preventDefault();
-    if(photoList.length===0){ showPopup('warningPopup','กรุณาแนบภาพประกอบอย่างน้อย 1 รูป'); return; }
+  async function submitReport(event) {
+    event.preventDefault();
+    if(photoList.length === 0){ 
+      showPopup('warningPopup','กรุณาแนบภาพประกอบอย่างน้อย 1 รูป'); 
+      return; 
+    }
 
-    const newReport = {
-      name: reportForm.name.value,
-      grade: reportForm.grade.value,
-      date: reportForm.date.value,
-      place: reportForm.place.value,
-      detail: reportForm.detail.value,
-      photos: photoList,
-      status: 'รอดำเนินการ',
-      timestamp: new Date().toLocaleString('th-TH')
-    };
+    const submitBtn = document.querySelector('.submit-btn');
+    const originalText = submitBtn.textContent;
 
-    try{
+    try {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'กำลังส่ง...';
+
+      const reportData = {
+        name: document.getElementById('name').value.trim(),
+        grade: document.getElementById('grade').value,
+        place: document.getElementById('place').value.trim(),
+        detail: document.getElementById('detail').value.trim(),
+        date: new Date().toLocaleString("th-TH"),
+        status: 'รอดำเนินการ',
+        photos: photoList
+      };
+
       const res = await fetch(`${API_BASE}/status`, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(newReport)
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reportData)
       });
-      if(!res.ok) throw new Error(await res.text().catch(()=>null) || 'ส่งไม่สำเร็จ');
+
+      if(!res.ok) {
+        const text = await res.text().catch(()=>null);
+        throw new Error(text || 'ส่งไม่สำเร็จ');
+      }
+
       showPopup('successPopup');
       reportForm.reset();
       photoList = [];
       renderPreview();
-      dateInput.valueAsDate = new Date();
-    }catch(err){
-      console.error(err);
-      showPopup('warningPopup','เกิดข้อผิดพลาด กรุณาลองใหม่');
+
+      // notify other pages
+      try { localStorage.setItem('reports-updated', String(Date.now())); } catch(e) {}
+
+    } catch (error) {
+      console.error('Submit error:', error);
+      showPopup('warningPopup','เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
     }
-  });
+  }
+
+  reportForm.addEventListener('submit', submitReport);
 });

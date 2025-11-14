@@ -13,7 +13,14 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // --- Middleware ---
-app.use(cors());
+// อนุญาตโดเมน Vercel
+app.use(cors({
+  origin: ['https://tp-repair.vercel.app'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.static(path.join(__dirname, "/")));
@@ -70,16 +77,13 @@ function createReportInStore(store, body) {
 }
 
 // --- Routes ---
-// GET all status reports
+// Status
 app.get("/api/reports/status", (req, res) => res.json(statusReports));
-
-// POST new status report
 app.post("/api/reports/status", (req, res) => {
   const body = req.body;
   if (!body?.name) return res.status(400).json({ message: "invalid" });
   const r = createReportInStore(statusReports, body);
 
-  // replicate to admin and history
   if (!adminReports.find((x) => x.id === r.id)) adminReports.push({ ...r });
   if (!historyReports.find((x) => x.id === r.id))
     historyReports.push({ ...r, archivedAt: new Date().toLocaleString("th-TH") });
@@ -90,15 +94,11 @@ app.post("/api/reports/status", (req, res) => {
 
   res.status(201).json({ message: "created", report: r });
 });
-
-// GET single status report
 app.get("/api/reports/status/:id", (req, res) => {
   const r = statusReports.find((x) => x.id === Number(req.params.id));
   if (!r) return res.status(404).json({ message: "not found" });
   res.json(r);
 });
-
-// DELETE single status report
 app.delete("/api/reports/status/:id", (req, res) => {
   const id = Number(req.params.id);
   statusReports = statusReports.filter((r) => r.id !== id);
@@ -109,8 +109,6 @@ app.delete("/api/reports/status/:id", (req, res) => {
   saveToFile(historyFile, historyReports);
   res.json({ message: "deleted" });
 });
-
-// DELETE all status reports
 app.delete("/api/reports/status", (req, res) => {
   statusReports = [];
   adminReports = [];
@@ -120,29 +118,35 @@ app.delete("/api/reports/status", (req, res) => {
   saveToFile(historyFile, historyReports);
   res.json({ message: "all deleted" });
 });
-
-// PATCH status report
 app.patch("/api/reports/status/:id", (req, res) => {
   const id = Number(req.params.id);
   const r = statusReports.find((x) => x.id === id);
   if (!r) return res.status(404).json({ message: "not found" });
   Object.assign(r, req.body);
-
-  // propagate to admin
   const adminCopy = adminReports.find((x) => x.id === id);
   if (adminCopy) Object.assign(adminCopy, req.body);
-
   saveToFile(statusFile, statusReports);
   saveToFile(adminFile, adminReports);
-
   res.json({ message: "updated", report: r });
 });
 
-// --- Admin routes ---
+// Admin
 app.get("/api/reports/admin", (req, res) => res.json(adminReports));
 app.get("/api/reports/admin/:id", (req, res) => {
   const r = adminReports.find((x) => x.id === Number(req.params.id));
   if (!r) return res.status(404).json({ message: "not found" });
+  res.json(r);
+});
+app.post("/api/reports/admin", (req, res) => {
+  const body = req.body;
+  if (!body?.name) return res.status(400).json({ message: "invalid" });
+  const r = createReportInStore(adminReports, body);
+  if (!statusReports.find((x) => x.id === r.id)) statusReports.push({ ...r });
+  if (!historyReports.find((x) => x.id === r.id))
+    historyReports.push({ ...r, archivedAt: new Date().toLocaleString("th-TH") });
+  saveToFile(adminFile, adminReports);
+  saveToFile(statusFile, statusReports);
+  saveToFile(historyFile, historyReports);
   res.json(r);
 });
 app.patch("/api/reports/admin/:id", (req, res) => {
@@ -150,18 +154,12 @@ app.patch("/api/reports/admin/:id", (req, res) => {
   const r = adminReports.find((x) => x.id === id);
   if (!r) return res.status(404).json({ message: "not found" });
   Object.assign(r, req.body);
-
-  // propagate to status
   const statusCopy = statusReports.find((x) => x.id === id);
   if (statusCopy) Object.assign(statusCopy, req.body);
-
   saveToFile(adminFile, adminReports);
   saveToFile(statusFile, statusReports);
-
   res.json({ message: "updated", report: r });
 });
-
-// DELETE admin
 app.delete("/api/reports/admin/:id", (req, res) => {
   const id = Number(req.params.id);
   adminReports = adminReports.filter((r) => r.id !== id);
@@ -182,11 +180,23 @@ app.delete("/api/reports/admin", (req, res) => {
   res.json({ message: "all deleted" });
 });
 
-// --- History ---
+// History
 app.get("/api/reports/history", (req, res) => res.json(historyReports));
 app.get("/api/reports/history/:id", (req, res) => {
   const r = historyReports.find((x) => x.id === Number(req.params.id));
   if (!r) return res.status(404).json({ message: "not found" });
+  res.json(r);
+});
+app.post("/api/reports/history", (req, res) => {
+  const body = req.body;
+  if (!body?.name) return res.status(400).json({ message: "invalid" });
+  const r = createReportInStore(historyReports, body);
+  r.archivedAt = new Date().toLocaleString("th-TH");
+  if (!statusReports.find((x) => x.id === r.id)) statusReports.push({ ...r });
+  if (!adminReports.find((x) => x.id === r.id)) adminReports.push({ ...r });
+  saveToFile(historyFile, historyReports);
+  saveToFile(statusFile, statusReports);
+  saveToFile(adminFile, adminReports);
   res.json(r);
 });
 app.delete("/api/reports/history/:id", (req, res) => {
@@ -201,7 +211,7 @@ app.delete("/api/reports/history", (req, res) => {
   res.json({ message: "all deleted" });
 });
 
-// --- Utility: move report ---
+// Utility: move report
 function moveBetweenStores(fromStore, toStore, id) {
   const idx = fromStore.findIndex((x) => x.id === id);
   if (idx === -1) return null;
@@ -210,7 +220,7 @@ function moveBetweenStores(fromStore, toStore, id) {
   return item;
 }
 
-// --- Archive ---
+// Archive
 app.post("/api/reports/status/:id/archive", (req, res) => {
   const id = Number(req.params.id);
   const item = moveBetweenStores(statusReports, historyReports, id);
@@ -230,5 +240,34 @@ app.post("/api/reports/admin/:id/archive", (req, res) => {
   res.json({ message: "archived", item });
 });
 
+// Unified API
+app.get("/api/reports/all", (req, res) => {
+  res.json({
+    status: statusReports,
+    admin: adminReports,
+    history: historyReports,
+    shared: sharedReports
+  });
+});
+app.post("/api/reports/all", (req, res) => {
+  const body = req.body;
+  if (!body?.name) return res.status(400).json({ message: "invalid" });
+  const r = createReportInStore(statusReports, body);
+  if (!adminReports.find((x) => x.id === r.id)) adminReports.push({ ...r });
+  if (!historyReports.find((x) => x.id === r.id))
+    historyReports.push({ ...r, archivedAt: new Date().toLocaleString("th-TH") });
+  saveToFile(statusFile, statusReports);
+  saveToFile(adminFile, adminReports);
+  saveToFile(historyFile, historyReports);
+  res.json({
+    status: r,
+    admin: adminReports.find(x => x.id === r.id),
+    history: historyReports.find(x => x.id === r.id)
+  });
+});
+
+// --- Server start ---
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on Vercel (port ${PORT})`);
+});

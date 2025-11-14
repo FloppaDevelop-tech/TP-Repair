@@ -1,15 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadHistoryReports();
-    
-    // Setup delete all buttons
+
+    // --- Delete all buttons ---
     const confirmDeleteAllBtn = document.getElementById('confirmDeleteAll');
     const cancelDeleteAllBtn = document.getElementById('cancelDeleteAll');
-    
+
+    const API_BASE = 'https://tp-repair.vercel.app/api/reports';
+
     if (confirmDeleteAllBtn) {
         confirmDeleteAllBtn.onclick = async () => {
             try {
-                const res = await fetch('/api/reports/history', { method: 'DELETE' });
-                if (!res.ok) throw new Error('ลบทั้งหมดไม่สำเร็จ');
+                const res = await fetch(`${API_BASE}/history`);
+                if (!res.ok) throw new Error('Failed to fetch history');
+                const reports = await res.json();
+
+                for (const report of reports) {
+                    await fetch(`${API_BASE}/history/${report.id}`, { method: 'DELETE' });
+                }
+
                 const deleteAllPopup = document.getElementById('deleteAllPopup');
                 deleteAllPopup.style.display = 'none';
                 deleteAllPopup.classList.remove('active');
@@ -20,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
     }
-    
+
     if (cancelDeleteAllBtn) {
         cancelDeleteAllBtn.onclick = () => {
             const deleteAllPopup = document.getElementById('deleteAllPopup');
@@ -32,21 +40,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let deleteTargetId = null;
 
+// --- Load history reports ---
 async function loadHistoryReports() {
     const container = document.getElementById('history-cards');
-    const deleteAllBtn = document.getElementById('deleteAllBtn');
     if (!container) return;
 
-    container.innerHTML = '';
+    const API_BASE = 'https://tp-repair.vercel.app/api/reports';
 
     try {
-    // ดึงเฉพาะข้อมูลจาก history store
-    const res = await fetch('/api/reports/history'); // ดึงจาก server
-        if (!res.ok) throw new Error('ไม่สามารถดึงข้อมูลได้');
-        let reports = await res.json();
+        const res = await fetch(`${API_BASE}/history`);
+        if (!res.ok) throw new Error('Failed to fetch history');
+        const reports = await res.json();
 
         if (reports.length === 0) {
-            container.innerHTML = '<p>ยังไม่มีประวัติการแจ้งซ่อม</p>';
+            container.innerHTML = '<p style="text-align:center; color:#999; padding:40px;">ยังไม่มีประวัติการแจ้งซ่อม</p>';
             return;
         }
 
@@ -57,10 +64,10 @@ async function loadHistoryReports() {
             const info = document.createElement('div');
             info.className = 'card-info';
             info.innerHTML = `
-                <h3>${report.name} (${report.grade})</h3>
+                <h3>${report.name} (${report.grade || '-'})</h3>
                 <p><strong>รหัส:</strong> ${report.id}</p>
-                <p>วันที่: ${report.date}</p>
-                <p>สถานที่: ${report.place}</p>
+                <p>วันที่: ${report.timestamp || report.date}</p>
+                <p>สถานที่: ${report.place || '-'}</p>
             `;
 
             const btns = document.createElement('div');
@@ -87,6 +94,7 @@ async function loadHistoryReports() {
         });
 
         // ปุ่มลบทั้งหมด
+        const deleteAllBtn = document.getElementById('deleteAllBtn');
         if(deleteAllBtn){
             deleteAllBtn.onclick = () => {
                 const deleteAllPopup = document.getElementById('deleteAllPopup');
@@ -101,27 +109,23 @@ async function loadHistoryReports() {
     }
 }
 
-// Popup รายละเอียด
+// --- Detail popup ---
 function showReportDetail(report){
     const modal = document.getElementById('reportDetailModal');
     const content = modal.querySelector('.detail-popup-content');
 
-    // Safe fallbacks for fields
     const safe = v => (v === undefined || v === null || v === '') ? '-' : v;
-    const escapeHtml = (input) => {
-        if (input === undefined || input === null) return '';
-        return String(input)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    };
+    const escapeHtml = input => input ? String(input)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;') : '';
 
     content.innerHTML = `
         <h2>${escapeHtml(safe(report.name))} (${escapeHtml(safe(report.grade))})</h2>
         <p><strong>รหัส:</strong> ${escapeHtml(safe(report.id))}</p>
-        <p><strong>วันที่:</strong> ${escapeHtml(safe(report.date))}</p>
+        <p><strong>วันที่:</strong> ${escapeHtml(safe(report.timestamp || report.date))}</p>
         <p><strong>สถานที่:</strong> ${escapeHtml(safe(report.place))}</p>
         <p><strong>รายละเอียด:</strong> ${escapeHtml(safe(report.detail))}</p>
         <div class="detail-popup-photos"></div>
@@ -145,7 +149,7 @@ function showReportDetail(report){
     document.getElementById('closeModal').onclick = () => modal.classList.remove('active');
 }
 
-// Popup ลบ
+// --- Delete popup ---
 function showDeletePopup(id){
     deleteTargetId = id;
     const deleteModal = document.getElementById('deleteModal');
@@ -156,9 +160,8 @@ function showDeletePopup(id){
 document.getElementById('confirmDelete').onclick = async () => {
     if(deleteTargetId === null) return;
     try {
-    // ลบเฉพาะใน history
-    const res = await fetch(`/api/reports/history/${deleteTargetId}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error('ลบไม่สำเร็จ');
+        const API_BASE = 'https://tp-repair.vercel.app/api/reports';
+        await fetch(`${API_BASE}/history/${deleteTargetId}`, { method: 'DELETE' });
         deleteTargetId = null;
         const deleteModal = document.getElementById('deleteModal');
         deleteModal.style.display = 'none';
@@ -177,67 +180,54 @@ document.getElementById('cancelDelete').onclick = () => {
     deleteModal.classList.remove('active');
 };
 
-// Share report function
+// --- Share report ---
 async function shareHistoryReport(reportId) {
     try {
-        const response = await fetch(`/api/reports/share/${reportId}`, {
+        const API_BASE = 'https://tp-repair.vercel.app/api/reports';
+        const response = await fetch(`${API_BASE}/history/${reportId}/share`, {
             method: 'POST',
             headers: {'Content-Type':'application/json'}
         });
 
-        if (!response.ok) {
-            throw new Error('Failed to create share link');
-        }
-
+        if (!response.ok) throw new Error('Failed to create share link');
         const data = await response.json();
         const shareUrl = data.shareUrl;
-        
-        // Show share popup
+
         const shareModal = document.getElementById('shareModal');
         const shareUrlInput = document.getElementById('shareUrlInput');
         const copyShareBtn = document.getElementById('copyShareBtn');
         const closeShareBtn = document.getElementById('closeShareBtn');
-        
+
         if (shareModal && shareUrlInput) {
             shareUrlInput.value = shareUrl;
             shareModal.style.display = 'flex';
             shareModal.classList.add('active');
-            
-            // Copy to clipboard
-            navigator.clipboard.writeText(shareUrl).catch(() => {
-                console.warn('Failed to copy to clipboard');
-            });
-            
-            // Copy button handler
-            if (copyShareBtn) {
+
+            navigator.clipboard.writeText(shareUrl).catch(()=>{});
+
+            if(copyShareBtn){
                 copyShareBtn.onclick = () => {
                     navigator.clipboard.writeText(shareUrl).then(() => {
                         copyShareBtn.textContent = 'คัดลอกแล้ว!';
-                        setTimeout(() => {
-                            copyShareBtn.textContent = 'คัดลอกอีกครั้ง';
-                        }, 2000);
+                        setTimeout(() => copyShareBtn.textContent = 'คัดลอกอีกครั้ง', 2000);
                     }).catch(() => {
                         shareUrlInput.select();
                         document.execCommand('copy');
                         copyShareBtn.textContent = 'คัดลอกแล้ว!';
-                        setTimeout(() => {
-                            copyShareBtn.textContent = 'คัดลอกอีกครั้ง';
-                        }, 2000);
+                        setTimeout(() => copyShareBtn.textContent = 'คัดลอกอีกครั้ง', 2000);
                     });
                 };
             }
-            
-            // Close button handler
-            if (closeShareBtn) {
+
+            if(closeShareBtn){
                 closeShareBtn.onclick = () => {
                     shareModal.style.display = 'none';
                     shareModal.classList.remove('active');
                 };
             }
-            
-            // Close on overlay click
+
             shareModal.onclick = (e) => {
-                if (e.target === shareModal) {
+                if(e.target === shareModal){
                     shareModal.style.display = 'none';
                     shareModal.classList.remove('active');
                 }
@@ -248,4 +238,3 @@ async function shareHistoryReport(reportId) {
         alert('เกิดข้อผิดพลาดในการแชร์ กรุณาลองใหม่');
     }
 }
-
